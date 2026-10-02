@@ -15,7 +15,7 @@ Simulador web público para brasileiros residentes fiscais nos EUA que investem 
 | 3. Parâmetros com fonte oficial e rotina de dados de mercado | Concluída |
 | 4. Interface | Concluída (React + Vite, cálculo em Web Worker) |
 | 5. Revisão | Concluída: [relatório de testes](docs/revisao/RELATORIO_TESTES.md), [capturas](docs/revisao/capturas/) e [pendências](docs/PENDENCIAS.md) |
-| 6. Publicação | Site estático no GitHub Pages: [passo a passo](docs/PUBLICACAO.md) |
+| 6. Publicação | Concluída: **<https://ogustavoconti-blip.github.io/simulador-sacre-brasil-eua/>** · [QR code](docs/publicacao/) · [passo a passo](docs/PUBLICACAO.md) |
 
 Antes de divulgar o link: aprovação do compliance, conferência do contador e teste no Safari e no Firefox ([`docs/PENDENCIAS.md`](docs/PENDENCIAS.md), seção 1).
 

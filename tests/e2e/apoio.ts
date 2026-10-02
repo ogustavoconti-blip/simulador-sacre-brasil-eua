@@ -4,7 +4,7 @@ export const ETAPAS = ['Boas-vindas', 'Onde você mora', 'Sua conta no Brasil', 
 export const ABAS = ['Painel', 'Alternativas', 'Estratégias', 'Crédito', 'Por produto', 'Detalhamento'];
 
 export async function abrir(page: Page) {
-  await page.goto('/');
+  await page.goto('./');
   await expect(page.getByRole('button', { name: /Entendi, quero simular/ })).toBeVisible();
 }
 
