@@ -1,0 +1,24 @@
+{
+  "sigla": "FL",
+  "nome": "Flórida",
+  "modo": "A",
+  "tem_imposto_juros_dividendos": {
+    "status": "confirmado",
+    "valor": false,
+    "fonte": "Florida Department of Revenue, Tax Information for New Residents: a Flórida não tem imposto de renda de pessoa física",
+    "url": "https://floridarevenue.com/Forms_library/current/brochure/gt800025.pdf",
+    "data_verificacao": "2026-10-01",
+    "nota": "Confirmado em página oficial do governo estadual em 01/10/2026."
+  },
+  "observacoes": [
+    "Sem imposto de renda de pessoa física."
+  ],
+  "base_inicial": null,
+  "faixas": null,
+  "deducoes": null,
+  "juros_estrangeiros": null,
+  "credito_imposto_estrangeiro": null,
+  "impostos_locais": null,
+  "residencia": null,
+  "ganho_capital_especifico": null
+}

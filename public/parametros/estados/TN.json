@@ -1,0 +1,24 @@
+{
+  "sigla": "TN",
+  "nome": "Tennessee",
+  "modo": "A",
+  "tem_imposto_juros_dividendos": {
+    "status": "confirmado",
+    "valor": false,
+    "fonte": "Tennessee Department of Revenue, HIT-3: Hall Income Tax (juros e dividendos) revogado a partir de 1º/01/2021",
+    "url": "https://revenue.support.tn.gov/hc/en-us/articles/360057828631-HIT-3-Hall-Income-Tax-Repealed-Beginning-January-1-2021",
+    "data_verificacao": "2026-10-01",
+    "nota": "Confirmado em página oficial do governo estadual em 01/10/2026."
+  },
+  "observacoes": [
+    "Imposto sobre juros e dividendos (Hall) revogado a partir de 2021."
+  ],
+  "base_inicial": null,
+  "faixas": null,
+  "deducoes": null,
+  "juros_estrangeiros": null,
+  "credito_imposto_estrangeiro": null,
+  "impostos_locais": null,
+  "residencia": null,
+  "ganho_capital_especifico": null
+}

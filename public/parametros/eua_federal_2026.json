@@ -1,0 +1,367 @@
+{
+  "ano": 2026,
+  "faixas": {
+    "single": {
+      "status": "confirmado",
+      "valor": [
+        {
+          "acima_de": 0,
+          "aliquota": 0.1
+        },
+        {
+          "acima_de": 12400,
+          "aliquota": 0.12
+        },
+        {
+          "acima_de": 50400,
+          "aliquota": 0.22
+        },
+        {
+          "acima_de": 105700,
+          "aliquota": 0.24
+        },
+        {
+          "acima_de": 201775,
+          "aliquota": 0.32
+        },
+        {
+          "acima_de": 256225,
+          "aliquota": 0.35
+        },
+        {
+          "acima_de": 640600,
+          "aliquota": 0.37
+        }
+      ],
+      "fonte": "Rev. Proc. 2025-32, seção 4.01, Tabela 3 (§1(j)(2)(C), Unmarried Individuals)",
+      "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+      "data_verificacao": "2026-10-01",
+      "nota": "Conferido no texto oficial da Rev. Proc. 2025-32 em 01/10/2026."
+    },
+    "mfj": {
+      "status": "confirmado",
+      "valor": [
+        {
+          "acima_de": 0,
+          "aliquota": 0.1
+        },
+        {
+          "acima_de": 24800,
+          "aliquota": 0.12
+        },
+        {
+          "acima_de": 100800,
+          "aliquota": 0.22
+        },
+        {
+          "acima_de": 211400,
+          "aliquota": 0.24
+        },
+        {
+          "acima_de": 403550,
+          "aliquota": 0.32
+        },
+        {
+          "acima_de": 512450,
+          "aliquota": 0.35
+        },
+        {
+          "acima_de": 768700,
+          "aliquota": 0.37
+        }
+      ],
+      "fonte": "Rev. Proc. 2025-32, seção 4.01, Tabela 1 (§1(j)(2)(A), Married Filing Jointly)",
+      "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+      "data_verificacao": "2026-10-01",
+      "nota": "Conferido no texto oficial da Rev. Proc. 2025-32 em 01/10/2026."
+    },
+    "mfs": {
+      "status": "confirmado",
+      "valor": [
+        {
+          "acima_de": 0,
+          "aliquota": 0.1
+        },
+        {
+          "acima_de": 12400,
+          "aliquota": 0.12
+        },
+        {
+          "acima_de": 50400,
+          "aliquota": 0.22
+        },
+        {
+          "acima_de": 105700,
+          "aliquota": 0.24
+        },
+        {
+          "acima_de": 201775,
+          "aliquota": 0.32
+        },
+        {
+          "acima_de": 256225,
+          "aliquota": 0.35
+        },
+        {
+          "acima_de": 384350,
+          "aliquota": 0.37
+        }
+      ],
+      "fonte": "Rev. Proc. 2025-32, seção 4.01, Tabela 4 (§1(j)(2)(D), Married Filing Separately)",
+      "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+      "data_verificacao": "2026-10-01",
+      "nota": "Conferido no texto oficial da Rev. Proc. 2025-32 em 01/10/2026."
+    },
+    "hoh": {
+      "status": "confirmado",
+      "valor": [
+        {
+          "acima_de": 0,
+          "aliquota": 0.1
+        },
+        {
+          "acima_de": 17700,
+          "aliquota": 0.12
+        },
+        {
+          "acima_de": 67450,
+          "aliquota": 0.22
+        },
+        {
+          "acima_de": 105700,
+          "aliquota": 0.24
+        },
+        {
+          "acima_de": 201750,
+          "aliquota": 0.32
+        },
+        {
+          "acima_de": 256200,
+          "aliquota": 0.35
+        },
+        {
+          "acima_de": 640600,
+          "aliquota": 0.37
+        }
+      ],
+      "fonte": "Rev. Proc. 2025-32, seção 4.01, Tabela 2 (§1(j)(2)(B), Heads of Households)",
+      "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+      "data_verificacao": "2026-10-01",
+      "nota": "Conferido no texto oficial da Rev. Proc. 2025-32 em 01/10/2026."
+    }
+  },
+  "deducao_padrao": {
+    "single": {
+      "status": "confirmado",
+      "valor": 16100,
+      "fonte": "Rev. Proc. 2025-32, seção 4.14(1)",
+      "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+      "data_verificacao": "2026-10-01",
+      "nota": "Conferido no texto oficial da Rev. Proc. 2025-32 em 01/10/2026."
+    },
+    "mfj": {
+      "status": "confirmado",
+      "valor": 32200,
+      "fonte": "Rev. Proc. 2025-32, seção 4.14(1)",
+      "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+      "data_verificacao": "2026-10-01",
+      "nota": "Conferido no texto oficial da Rev. Proc. 2025-32 em 01/10/2026."
+    },
+    "mfs": {
+      "status": "confirmado",
+      "valor": 16100,
+      "fonte": "Rev. Proc. 2025-32, seção 4.14(1)",
+      "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+      "data_verificacao": "2026-10-01",
+      "nota": "Conferido no texto oficial da Rev. Proc. 2025-32 em 01/10/2026."
+    },
+    "hoh": {
+      "status": "confirmado",
+      "valor": 24150,
+      "fonte": "Rev. Proc. 2025-32, seção 4.14(1)",
+      "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+      "data_verificacao": "2026-10-01",
+      "nota": "Conferido no texto oficial da Rev. Proc. 2025-32 em 01/10/2026."
+    }
+  },
+  "ganho_capital_qualificado": {
+    "single": {
+      "status": "confirmado",
+      "valor": [
+        {
+          "acima_de": 0,
+          "aliquota": 0
+        },
+        {
+          "acima_de": 49450,
+          "aliquota": 0.15
+        },
+        {
+          "acima_de": 545500,
+          "aliquota": 0.2
+        }
+      ],
+      "fonte": "Rev. Proc. 2025-32, seção 4.03 (§1(h) e §1(j)(5)): maximum zero rate amount e maximum 15% rate amount",
+      "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+      "data_verificacao": "2026-10-01",
+      "nota": "Conferido no texto oficial da Rev. Proc. 2025-32 em 01/10/2026."
+    },
+    "mfj": {
+      "status": "confirmado",
+      "valor": [
+        {
+          "acima_de": 0,
+          "aliquota": 0
+        },
+        {
+          "acima_de": 98900,
+          "aliquota": 0.15
+        },
+        {
+          "acima_de": 613700,
+          "aliquota": 0.2
+        }
+      ],
+      "fonte": "Rev. Proc. 2025-32, seção 4.03 (§1(h) e §1(j)(5))",
+      "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+      "data_verificacao": "2026-10-01",
+      "nota": "Conferido no texto oficial da Rev. Proc. 2025-32 em 01/10/2026."
+    },
+    "mfs": {
+      "status": "confirmado",
+      "valor": [
+        {
+          "acima_de": 0,
+          "aliquota": 0
+        },
+        {
+          "acima_de": 49450,
+          "aliquota": 0.15
+        },
+        {
+          "acima_de": 306850,
+          "aliquota": 0.2
+        }
+      ],
+      "fonte": "Rev. Proc. 2025-32, seção 4.03 (§1(h) e §1(j)(5))",
+      "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+      "data_verificacao": "2026-10-01",
+      "nota": "Conferido no texto oficial da Rev. Proc. 2025-32 em 01/10/2026."
+    },
+    "hoh": {
+      "status": "confirmado",
+      "valor": [
+        {
+          "acima_de": 0,
+          "aliquota": 0
+        },
+        {
+          "acima_de": 66200,
+          "aliquota": 0.15
+        },
+        {
+          "acima_de": 579600,
+          "aliquota": 0.2
+        }
+      ],
+      "fonte": "Rev. Proc. 2025-32, seção 4.03 (§1(h) e §1(j)(5))",
+      "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+      "data_verificacao": "2026-10-01",
+      "nota": "Conferido no texto oficial da Rev. Proc. 2025-32 em 01/10/2026."
+    }
+  },
+  "niit": {
+    "aliquota": {
+      "status": "confirmado",
+      "valor": 0.038,
+      "fonte": "IRS Topic 559, Net Investment Income Tax (26 U.S.C. §1411)",
+      "url": "https://www.irs.gov/taxtopics/tc559",
+      "data_verificacao": "2026-10-01",
+      "nota": "Conferido na página do IRS (atualizada em 24/09/2026) em 01/10/2026."
+    },
+    "limiar_magi": {
+      "single": {
+        "status": "confirmado",
+        "valor": 200000,
+        "fonte": "IRS Topic 559: single ou head of household, US$ 200.000",
+        "url": "https://www.irs.gov/taxtopics/tc559",
+        "data_verificacao": "2026-10-01",
+        "nota": "Limite fixado em lei, sem correção pela inflação."
+      },
+      "mfj": {
+        "status": "confirmado",
+        "valor": 250000,
+        "fonte": "IRS Topic 559: married filing jointly, US$ 250.000",
+        "url": "https://www.irs.gov/taxtopics/tc559",
+        "data_verificacao": "2026-10-01",
+        "nota": "Limite fixado em lei, sem correção pela inflação."
+      },
+      "mfs": {
+        "status": "confirmado",
+        "valor": 125000,
+        "fonte": "IRS Topic 559: married filing separately, US$ 125.000",
+        "url": "https://www.irs.gov/taxtopics/tc559",
+        "data_verificacao": "2026-10-01",
+        "nota": "Limite fixado em lei, sem correção pela inflação."
+      },
+      "hoh": {
+        "status": "confirmado",
+        "valor": 200000,
+        "fonte": "IRS Topic 559: single ou head of household, US$ 200.000",
+        "url": "https://www.irs.gov/taxtopics/tc559",
+        "data_verificacao": "2026-10-01",
+        "nota": "Limite fixado em lei, sem correção pela inflação."
+      }
+    },
+    "inclui_cambio_988": {
+      "status": "pendente",
+      "id": "eua.niit.cambio_988",
+      "rotulo": "NIIT: ganho cambial do §988 entra na renda de investimentos",
+      "interpretacoes": [
+        {
+          "id": "inclui",
+          "rotulo": "Inclui o ganho cambial (conservador)",
+          "valor": true
+        }
+      ],
+      "fonte": "26 U.S.C. §1411; 26 CFR §1.1411-4",
+      "url": "https://www.ecfr.gov/current/title-26/section-1.1411-4",
+      "data_verificacao": "2026-10-01",
+      "nota": "A IRS Topic 559 lista juros e ganhos na venda de bens, mas não trata do câmbio do §988. Confirmar com o contador."
+    }
+  },
+  "credito": {
+    "carryback_anos": {
+      "status": "confirmado",
+      "valor": 1,
+      "fonte": "26 U.S.C. §904(c): \"first preceding taxable year\"",
+      "url": "https://www.law.cornell.edu/uscode/text/26/904",
+      "data_verificacao": "2026-10-01",
+      "nota": "Conferido no texto do U.S. Code em 01/10/2026."
+    },
+    "carryforward_anos": {
+      "status": "confirmado",
+      "valor": 10,
+      "fonte": "26 U.S.C. §904(c): \"first 10 succeeding taxable years\"",
+      "url": "https://www.law.cornell.edu/uscode/text/26/904",
+      "data_verificacao": "2026-10-01",
+      "nota": "Conferido no texto do U.S. Code em 01/10/2026."
+    }
+  },
+  "curto_prazo_meses": {
+    "status": "confirmado",
+    "valor": 12,
+    "fonte": "26 U.S.C. §1283(a)(1)(A): vencimento fixo de até 1 ano da data de emissão",
+    "url": "https://www.law.cornell.edu/uscode/text/26/1283",
+    "data_verificacao": "2026-10-01",
+    "nota": "Conferido no texto do U.S. Code em 01/10/2026."
+  },
+  "deducao_imposto_estrangeiro": {
+    "status": "confirmado",
+    "valor": "itemizada_fora_do_teto_salt",
+    "fonte": "26 U.S.C. §164(a)(3) e §164(b)(6), última frase; IRS, Instructions for Schedule A (2025), linha 6",
+    "url": "https://www.law.cornell.edu/uscode/text/26/164",
+    "data_verificacao": "2026-10-01",
+    "nota": "Conferido em 01/10/2026: o teto do SALT \"shall not apply to any foreign taxes described in subsection (a)(3)\". A dedução é itemizada (Schedule A, linha 6)."
+  }
+}

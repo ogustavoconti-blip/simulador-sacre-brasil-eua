@@ -1,0 +1,24 @@
+{
+  "sigla": "WY",
+  "nome": "Wyoming",
+  "modo": "A",
+  "tem_imposto_juros_dividendos": {
+    "status": "confirmado",
+    "valor": false,
+    "fonte": "Wyoming Legislature, Legislative Service Office, Wyoming Tax Structure (jun/2025): alíquota de imposto de renda de pessoa física de 0%",
+    "url": "https://wyoleg.gov/InterimCommittee/2025/03-202506032-01WyomingtaxstructureratesandcollectionsJune32025.pdf",
+    "data_verificacao": "2026-10-01",
+    "nota": "Confirmado em página oficial do governo estadual em 01/10/2026."
+  },
+  "observacoes": [
+    "Sem imposto de renda de pessoa física."
+  ],
+  "base_inicial": null,
+  "faixas": null,
+  "deducoes": null,
+  "juros_estrangeiros": null,
+  "credito_imposto_estrangeiro": null,
+  "impostos_locais": null,
+  "residencia": null,
+  "ganho_capital_especifico": null
+}

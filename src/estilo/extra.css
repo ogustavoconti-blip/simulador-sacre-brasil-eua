@@ -1,0 +1,35 @@
+/* Complementos do app em relação ao protótipo */
+.carregando{display:grid;place-items:center;height:100vh;font-family:var(--serif);color:var(--verde);font-size:1.3rem;text-align:center;padding:1rem}
+.erro-campo{color:var(--alerta);font-size:.8rem;font-weight:600}
+.input[aria-invalid="true"],.iw[data-invalido="true"]{border-color:var(--alerta);box-shadow:0 0 0 2px rgba(139,111,71,.25)}
+.parciais{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem;margin-top:.5rem}
+.problemas{list-style:none;padding:0;display:flex;flex-direction:column;gap:.4rem;font-size:.9rem}
+.problemas li{display:flex;gap:.5rem;align-items:flex-start}
+.calc-status{font-size:.72rem;color:var(--sobre-escuro-2)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.vazio{padding:1.2rem;text-align:center;color:var(--texto-2);border:1px dashed var(--borda);border-radius:var(--r);background:#fff}
+.so-impressao{display:none}
+.tabela td.num,.tabela th.num{text-align:right;white-space:nowrap}
+.est .acao{margin-top:auto}
+.nav-telas{display:flex;justify-content:space-between;gap:.8rem;margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--borda)}
+
+@media print{
+  @page{size:A4;margin:14mm}
+  html{font-size:10.5pt}
+  body{background:#fff}
+  .app{display:block;height:auto;overflow:visible}
+  .topbar,.nav,.rodape,.aviso-tela,.tabs,.seg,.r-botoes,.nao-imprimir,dialog{display:none!important}
+  .main,.resumo{overflow:visible;padding:0}
+  .resumo{background:#fff;color:var(--texto);border-top:2px solid var(--verde);margin-top:1rem;padding-top:1rem}
+  .resumo .bn-valor,.resumo .bn-grid b,.resumo .memo.bn-valor{color:var(--verde)}
+  .resumo .bn-label,.resumo .r-sec>h4,.resumo .r-titulo h3{color:var(--alerta)}
+  .resumo .bn-sub,.resumo .r-alerta{color:var(--texto-2)}
+  [role=tabpanel][hidden]{display:block!important}
+  [role=tabpanel]{break-inside:avoid-page;margin-bottom:1rem}
+  .so-impressao{display:block}
+  .card,.tabela-wrap,.est{box-shadow:none}
+}
+.tabela td.r{white-space:nowrap}
+.tabela--densa th,.tabela--densa td{padding:.55rem .5rem}
+.tabela--densa{font-size:.82rem}
+.field .selo--estado{white-space:normal;text-align:left;margin-top:.45rem}

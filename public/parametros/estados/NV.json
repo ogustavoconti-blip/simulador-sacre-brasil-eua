@@ -1,0 +1,24 @@
+{
+  "sigla": "NV",
+  "nome": "Nevada",
+  "modo": "A",
+  "tem_imposto_juros_dividendos": {
+    "status": "confirmado",
+    "valor": false,
+    "fonte": "Nevada Department of Taxation, Income Tax in Nevada: o estado não cobra imposto de renda de pessoa física",
+    "url": "https://tax.nv.gov/about-nevada-department-of-taxation/income-tax-in-nevada/",
+    "data_verificacao": "2026-10-01",
+    "nota": "Confirmado em página oficial do governo estadual em 01/10/2026."
+  },
+  "observacoes": [
+    "Sem imposto de renda de pessoa física."
+  ],
+  "base_inicial": null,
+  "faixas": null,
+  "deducoes": null,
+  "juros_estrangeiros": null,
+  "credito_imposto_estrangeiro": null,
+  "impostos_locais": null,
+  "residencia": null,
+  "ganho_capital_especifico": null
+}

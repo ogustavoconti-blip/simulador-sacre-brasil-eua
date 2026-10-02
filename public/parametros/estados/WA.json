@@ -1,0 +1,24 @@
+{
+  "sigla": "WA",
+  "nome": "Washington",
+  "modo": "A",
+  "tem_imposto_juros_dividendos": {
+    "status": "confirmado",
+    "valor": false,
+    "fonte": "Washington Department of Revenue, Capital gains tax: sem imposto sobre juros e dividendos; imposto sobre ganho de capital de longo prazo de pessoa física",
+    "url": "https://dor.wa.gov/taxes-rates/other-taxes/capital-gains-tax",
+    "data_verificacao": "2026-10-01",
+    "nota": "Confirmado em página oficial do governo estadual em 01/10/2026."
+  },
+  "observacoes": [
+    "Sem imposto sobre juros e dividendos. Há imposto estadual sobre ganho de capital de longo prazo de pessoa física (7%; 9,9% acima de US$ 1 milhão a partir de 2025; dedução de US$ 278 mil em 2025). Atenção quando houver ganho de capital."
+  ],
+  "base_inicial": null,
+  "faixas": null,
+  "deducoes": null,
+  "juros_estrangeiros": null,
+  "credito_imposto_estrangeiro": null,
+  "impostos_locais": null,
+  "residencia": null,
+  "ganho_capital_especifico": null
+}

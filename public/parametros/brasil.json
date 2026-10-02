@@ -1,0 +1,674 @@
+{
+  "versao": "2026.10.01-etapa3",
+  "revisado_em": "2026-10-01",
+  "tabela_regressiva": {
+    "status": "confirmado",
+    "valor": [
+      {
+        "ate_dias": 180,
+        "aliquota": 0.225
+      },
+      {
+        "ate_dias": 360,
+        "aliquota": 0.2
+      },
+      {
+        "ate_dias": 720,
+        "aliquota": 0.175
+      },
+      {
+        "ate_dias": null,
+        "aliquota": 0.15
+      }
+    ],
+    "fonte": "Lei 11.033/2004, art. 1º, I a IV",
+    "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+    "data_verificacao": "2026-10-01",
+    "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. Os textos de medidas provisórias posteriores aparecem no site com \"vigência encerrada\"; vale o texto original."
+  },
+  "iof_regressivo": {
+    "status": "confirmado",
+    "valor": [
+      0.96,
+      0.93,
+      0.9,
+      0.86,
+      0.83,
+      0.8,
+      0.76,
+      0.73,
+      0.7,
+      0.66,
+      0.63,
+      0.6,
+      0.56,
+      0.53,
+      0.5,
+      0.46,
+      0.43,
+      0.4,
+      0.36,
+      0.33,
+      0.3,
+      0.26,
+      0.23,
+      0.2,
+      0.16,
+      0.13,
+      0.1,
+      0.06,
+      0.03,
+      0
+    ],
+    "fonte": "Decreto 6.306/2007, Anexo (percentual limite do rendimento por número de dias, de 1 a 30)",
+    "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+    "data_verificacao": "2026-10-01",
+    "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+  },
+  "regimes": {
+    "light": {
+      "tesouro_selic": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": "regressiva",
+          "fonte": "Lei 8.981/1995, art. 78 (mesmas normas do residente); Lei 11.033/2004, art. 1º, I a IV",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": true,
+          "fonte": "Decreto 6.306/2007, art. 32, caput e §1º, I: IOF de 1% ao dia sobre o resgate, limitado ao rendimento, conforme o Anexo",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 8.981/1995, art. 78; Lei 11.033/2004, art. 1º"
+      },
+      "tesouro_pre": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": "regressiva",
+          "fonte": "Lei 8.981/1995, art. 78 (mesmas normas do residente); Lei 11.033/2004, art. 1º, I a IV",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": true,
+          "fonte": "Decreto 6.306/2007, art. 32, caput e §1º, I: IOF de 1% ao dia sobre o resgate, limitado ao rendimento, conforme o Anexo",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 8.981/1995, art. 78; Lei 11.033/2004, art. 1º"
+      },
+      "tesouro_pre_cupom": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": "regressiva",
+          "fonte": "Lei 8.981/1995, art. 78 (mesmas normas do residente); Lei 11.033/2004, art. 1º, I a IV",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": true,
+          "fonte": "Decreto 6.306/2007, art. 32, caput e §1º, I: IOF de 1% ao dia sobre o resgate, limitado ao rendimento, conforme o Anexo",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 8.981/1995, art. 78; Lei 11.033/2004, art. 1º"
+      },
+      "tesouro_ipca": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": "regressiva",
+          "fonte": "Lei 8.981/1995, art. 78 (mesmas normas do residente); Lei 11.033/2004, art. 1º, I a IV",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": true,
+          "fonte": "Decreto 6.306/2007, art. 32, caput e §1º, I: IOF de 1% ao dia sobre o resgate, limitado ao rendimento, conforme o Anexo",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 8.981/1995, art. 78; Lei 11.033/2004, art. 1º"
+      },
+      "tesouro_ipca_cupom": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": "regressiva",
+          "fonte": "Lei 8.981/1995, art. 78 (mesmas normas do residente); Lei 11.033/2004, art. 1º, I a IV",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": true,
+          "fonte": "Decreto 6.306/2007, art. 32, caput e §1º, I: IOF de 1% ao dia sobre o resgate, limitado ao rendimento, conforme o Anexo",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 8.981/1995, art. 78; Lei 11.033/2004, art. 1º"
+      },
+      "cdb_pre": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": "regressiva",
+          "fonte": "Lei 8.981/1995, art. 78 (mesmas normas do residente); Lei 11.033/2004, art. 1º, I a IV",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": true,
+          "fonte": "Decreto 6.306/2007, art. 32, caput e §1º, I: IOF de 1% ao dia sobre o resgate, limitado ao rendimento, conforme o Anexo",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 8.981/1995, art. 78; Lei 11.033/2004, art. 1º"
+      },
+      "cdb_cdi": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": "regressiva",
+          "fonte": "Lei 8.981/1995, art. 78 (mesmas normas do residente); Lei 11.033/2004, art. 1º, I a IV",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": true,
+          "fonte": "Decreto 6.306/2007, art. 32, caput e §1º, I: IOF de 1% ao dia sobre o resgate, limitado ao rendimento, conforme o Anexo",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 8.981/1995, art. 78; Lei 11.033/2004, art. 1º"
+      },
+      "cdb_ipca": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": "regressiva",
+          "fonte": "Lei 8.981/1995, art. 78 (mesmas normas do residente); Lei 11.033/2004, art. 1º, I a IV",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": true,
+          "fonte": "Decreto 6.306/2007, art. 32, caput e §1º, I: IOF de 1% ao dia sobre o resgate, limitado ao rendimento, conforme o Anexo",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 8.981/1995, art. 78; Lei 11.033/2004, art. 1º"
+      },
+      "lci": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0,
+          "fonte": "Lei 11.033/2004, art. 3º, II: isenção na fonte e na declaração da pessoa física (LCI, CRI)",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": true,
+          "fonte": "Decreto 6.306/2007, art. 32, caput e §1º, I: IOF de 1% ao dia sobre o resgate, limitado ao rendimento, conforme o Anexo",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 11.033/2004, art. 3º, II"
+      },
+      "lca": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0,
+          "fonte": "Lei 11.033/2004, art. 3º, IV: isenção na fonte e na declaração da pessoa física (LCA, CRA)",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": false,
+          "fonte": "Decreto 6.306/2007, art. 32, §2º, V e VI: alíquota zero para LCA, CRA, CRI e debêntures",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 11.033/2004, art. 3º, IV"
+      },
+      "cri": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0,
+          "fonte": "Lei 11.033/2004, art. 3º, II: isenção na fonte e na declaração da pessoa física (LCI, CRI)",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": false,
+          "fonte": "Decreto 6.306/2007, art. 32, §2º, V e VI: alíquota zero para LCA, CRA, CRI e debêntures",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 11.033/2004, art. 3º, II"
+      },
+      "cra": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0,
+          "fonte": "Lei 11.033/2004, art. 3º, IV: isenção na fonte e na declaração da pessoa física (LCA, CRA)",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": false,
+          "fonte": "Decreto 6.306/2007, art. 32, §2º, V e VI: alíquota zero para LCA, CRA, CRI e debêntures",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 11.033/2004, art. 3º, IV"
+      },
+      "debenture": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": "regressiva",
+          "fonte": "Lei 8.981/1995, art. 78 (mesmas normas do residente); Lei 11.033/2004, art. 1º, I a IV",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": false,
+          "fonte": "Decreto 6.306/2007, art. 32, §2º, V e VI: alíquota zero para LCA, CRA, CRI e debêntures",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 8.981/1995, art. 78; Lei 11.033/2004, art. 1º"
+      },
+      "debenture_incentivada": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0,
+          "fonte": "Lei 12.431/2011, art. 2º, I (0% para pessoa física residente), aplicado à CNR Light pela Lei 8.981/1995, art. 78; confirmado pela Sacre com o BTG Pactual",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12431.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. Decisão da Sacre registrada no plano em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": false,
+          "fonte": "Decreto 6.306/2007, art. 32, §2º, V e VI: alíquota zero para LCA, CRA, CRI e debêntures",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 12.431/2011, art. 2º, I; Lei 8.981/1995, art. 78"
+      }
+    },
+    "full": {
+      "tesouro_selic": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0,
+          "fonte": "Lei 11.312/2006, art. 1º, caput e §1º, I: alíquota zero em títulos públicos para beneficiário no exterior, em operações conforme as normas do CMN, exceto país com tributação favorecida",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2006/lei/l11312.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": true,
+          "fonte": "Decreto 6.306/2007, art. 32, caput e §1º, I: IOF de 1% ao dia sobre o resgate, limitado ao rendimento, conforme o Anexo",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 11.312/2006, art. 1º, §1º, I"
+      },
+      "tesouro_pre": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0,
+          "fonte": "Lei 11.312/2006, art. 1º, caput e §1º, I: alíquota zero em títulos públicos para beneficiário no exterior, em operações conforme as normas do CMN, exceto país com tributação favorecida",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2006/lei/l11312.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": true,
+          "fonte": "Decreto 6.306/2007, art. 32, caput e §1º, I: IOF de 1% ao dia sobre o resgate, limitado ao rendimento, conforme o Anexo",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 11.312/2006, art. 1º, §1º, I"
+      },
+      "tesouro_pre_cupom": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0,
+          "fonte": "Lei 11.312/2006, art. 1º, caput e §1º, I: alíquota zero em títulos públicos para beneficiário no exterior, em operações conforme as normas do CMN, exceto país com tributação favorecida",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2006/lei/l11312.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": true,
+          "fonte": "Decreto 6.306/2007, art. 32, caput e §1º, I: IOF de 1% ao dia sobre o resgate, limitado ao rendimento, conforme o Anexo",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 11.312/2006, art. 1º, §1º, I"
+      },
+      "tesouro_ipca": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0,
+          "fonte": "Lei 11.312/2006, art. 1º, caput e §1º, I: alíquota zero em títulos públicos para beneficiário no exterior, em operações conforme as normas do CMN, exceto país com tributação favorecida",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2006/lei/l11312.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": true,
+          "fonte": "Decreto 6.306/2007, art. 32, caput e §1º, I: IOF de 1% ao dia sobre o resgate, limitado ao rendimento, conforme o Anexo",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 11.312/2006, art. 1º, §1º, I"
+      },
+      "tesouro_ipca_cupom": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0,
+          "fonte": "Lei 11.312/2006, art. 1º, caput e §1º, I: alíquota zero em títulos públicos para beneficiário no exterior, em operações conforme as normas do CMN, exceto país com tributação favorecida",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2006/lei/l11312.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": true,
+          "fonte": "Decreto 6.306/2007, art. 32, caput e §1º, I: IOF de 1% ao dia sobre o resgate, limitado ao rendimento, conforme o Anexo",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 11.312/2006, art. 1º, §1º, I"
+      },
+      "cdb_pre": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0.15,
+          "fonte": "B3, Manual do Investidor Não Residente Pessoa Natural (2024): 15% em renda fixa privada no regime do CMN",
+          "url": "https://www.b3.com.br/pt_br/",
+          "data_verificacao": "2026-10-01",
+          "nota": "Verificado pela Sacre (Nota Técnica rev. 01/10/2026). O manual da B3 não foi relido nesta etapa."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": true,
+          "fonte": "Decreto 6.306/2007, art. 32, caput e §1º, I: IOF de 1% ao dia sobre o resgate, limitado ao rendimento, conforme o Anexo",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Res. CMN 4.373/2014 e normas sucessoras; Manual B3"
+      },
+      "cdb_cdi": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0.15,
+          "fonte": "B3, Manual do Investidor Não Residente Pessoa Natural (2024): 15% em renda fixa privada no regime do CMN",
+          "url": "https://www.b3.com.br/pt_br/",
+          "data_verificacao": "2026-10-01",
+          "nota": "Verificado pela Sacre (Nota Técnica rev. 01/10/2026). O manual da B3 não foi relido nesta etapa."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": true,
+          "fonte": "Decreto 6.306/2007, art. 32, caput e §1º, I: IOF de 1% ao dia sobre o resgate, limitado ao rendimento, conforme o Anexo",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Res. CMN 4.373/2014 e normas sucessoras; Manual B3"
+      },
+      "cdb_ipca": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0.15,
+          "fonte": "B3, Manual do Investidor Não Residente Pessoa Natural (2024): 15% em renda fixa privada no regime do CMN",
+          "url": "https://www.b3.com.br/pt_br/",
+          "data_verificacao": "2026-10-01",
+          "nota": "Verificado pela Sacre (Nota Técnica rev. 01/10/2026). O manual da B3 não foi relido nesta etapa."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": true,
+          "fonte": "Decreto 6.306/2007, art. 32, caput e §1º, I: IOF de 1% ao dia sobre o resgate, limitado ao rendimento, conforme o Anexo",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Res. CMN 4.373/2014 e normas sucessoras; Manual B3"
+      },
+      "lci": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0,
+          "fonte": "Estudo Tributário Sacre (21/08/2026); Lei 11.033/2004, art. 3º, II",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": true,
+          "fonte": "Decreto 6.306/2007, art. 32, caput e §1º, I: IOF de 1% ao dia sobre o resgate, limitado ao rendimento, conforme o Anexo",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 11.033/2004, art. 3º"
+      },
+      "lca": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0,
+          "fonte": "Estudo Tributário Sacre (21/08/2026); Lei 11.033/2004, art. 3º, II e IV",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": false,
+          "fonte": "Decreto 6.306/2007, art. 32, §2º, V e VI: alíquota zero para LCA, CRA, CRI e debêntures",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 11.033/2004, art. 3º"
+      },
+      "cri": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0,
+          "fonte": "Estudo Tributário Sacre (21/08/2026); Lei 11.033/2004, art. 3º, II e IV",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": false,
+          "fonte": "Decreto 6.306/2007, art. 32, §2º, V e VI: alíquota zero para LCA, CRA, CRI e debêntures",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 11.033/2004, art. 3º"
+      },
+      "cra": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0,
+          "fonte": "Estudo Tributário Sacre (21/08/2026); Lei 11.033/2004, art. 3º, II e IV",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": false,
+          "fonte": "Decreto 6.306/2007, art. 32, §2º, V e VI: alíquota zero para LCA, CRA, CRI e debêntures",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 11.033/2004, art. 3º"
+      },
+      "debenture": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0.15,
+          "fonte": "B3, Manual do Investidor Não Residente Pessoa Natural (2024): 15% em renda fixa privada no regime do CMN",
+          "url": "https://www.b3.com.br/pt_br/",
+          "data_verificacao": "2026-10-01",
+          "nota": "Verificado pela Sacre (Nota Técnica rev. 01/10/2026). O manual da B3 não foi relido nesta etapa."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": false,
+          "fonte": "Decreto 6.306/2007, art. 32, §2º, V e VI: alíquota zero para LCA, CRA, CRI e debêntures",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Res. CMN 4.373/2014 e normas sucessoras; Manual B3"
+      },
+      "debenture_incentivada": {
+        "aliquota": {
+          "status": "confirmado",
+          "valor": 0,
+          "fonte": "Lei 12.431/2011, art. 1º: alíquota zero para beneficiário no exterior, exceto país com tributação favorecida",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12431.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+        },
+        "iof": {
+          "status": "confirmado",
+          "valor": false,
+          "fonte": "Decreto 6.306/2007, art. 32, §2º, V e VI: alíquota zero para LCA, CRA, CRI e debêntures",
+          "url": "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2007/decreto/d6306.htm",
+          "data_verificacao": "2026-10-01",
+          "nota": "Conferido no texto oficial (Planalto) em 01/10/2026. O art. 32 não distingue residente de não residente."
+        },
+        "base_legal": "Lei 12.431/2011, art. 1º"
+      }
+    }
+  },
+  "cupons": {
+    "prazo_light": {
+      "status": "pendente",
+      "id": "brasil.cupons.prazo_light",
+      "rotulo": "IR sobre cupons na CNR Light: prazo da tabela regressiva",
+      "interpretacoes": [
+        {
+          "id": "compra",
+          "rotulo": "Prazo contado da compra",
+          "valor": "desde_compra"
+        },
+        {
+          "id": "ultimo_cupom",
+          "rotulo": "Prazo contado do último cupom",
+          "valor": "desde_ultimo_cupom"
+        }
+      ],
+      "fonte": "Lei 11.033/2004, art. 1º; IN RFB 1.585/2015, art. 46",
+      "url": "https://www.planalto.gov.br/ccivil_03/_ato2004-2006/2004/lei/l11033.htm",
+      "data_verificacao": "2026-10-01",
+      "nota": "Há indício a favor do prazo contado da compra (material do Tesouro Direto), mas o texto oficial da IN RFB 1.585/2015 ainda não foi confirmado. Os dois resultados aparecem lado a lado."
+    },
+    "taxa_cupom_tesouro": {
+      "tesouro_pre_cupom": {
+        "status": "confirmado",
+        "valor": 10,
+        "fonte": "Tesouro Nacional, Dívida Pública: a experiência brasileira, Parte 3, cap. 2, Tabela 1: NTN-F, 10% a.a., pagos semestralmente",
+        "url": "https://cdn.tesouro.gov.br/sistemas-internos/apex/producao/sistemas/thot/arquivos/publicacoes/28684_893377/anexos/4710_989001/18-Parte%203_2.pdf",
+        "data_verificacao": "2026-10-01",
+        "nota": "Conferido na publicação do Tesouro Nacional em 01/10/2026. Cupom semestral = (1 + 10%)^½ − 1."
+      },
+      "tesouro_ipca_cupom": {
+        "status": "confirmado",
+        "valor": 6,
+        "fonte": "Tesouro Nacional, Dívida Pública: a experiência brasileira, Parte 3, cap. 2, Tabela 1: NTN-B, 6% a.a., pagos semestralmente",
+        "url": "https://cdn.tesouro.gov.br/sistemas-internos/apex/producao/sistemas/thot/arquivos/publicacoes/28684_893377/anexos/4710_989001/18-Parte%203_2.pdf",
+        "data_verificacao": "2026-10-01",
+        "nota": "Conferido na publicação do Tesouro Nacional em 01/10/2026. Cupom semestral = (1 + 6%)^½ − 1, sobre o valor nominal atualizado pelo IPCA."
+      }
+    }
+  },
+  "imoveis": {
+    "ganho_capital": {
+      "status": "confirmado",
+      "valor": [
+        {
+          "ate": 5000000,
+          "aliquota": 0.15
+        },
+        {
+          "ate": 10000000,
+          "aliquota": 0.175
+        },
+        {
+          "ate": 30000000,
+          "aliquota": 0.2
+        },
+        {
+          "ate": null,
+          "aliquota": 0.225
+        }
+      ],
+      "fonte": "Lei 8.981/1995, art. 21, na redação da Lei 13.259/2016",
+      "url": "https://www.planalto.gov.br/ccivil_03/leis/l8981.htm",
+      "data_verificacao": "2026-10-01",
+      "nota": "Conferido no texto oficial (Planalto) em 01/10/2026."
+    }
+  }
+}

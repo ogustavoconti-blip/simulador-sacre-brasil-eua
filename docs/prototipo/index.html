@@ -1,0 +1,1834 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulador Sacre — Protótipo</title>
+<meta name="description" content="Protótipo navegável das 7 etapas do Simulador Sacre de Eficiência Brasil–EUA. Valores ilustrativos, sem cálculo.">
+<!-- Protótipo: fontes via Google Fonts. No produto final, Gelasio e Source Sans 3 (licença OFL) ficam embutidas no próprio site. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gelasio:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --verde:#173232; --verde-2:#21403F; --verde-3:#2F5150; --verde-tint:#EAF0EE;
+  --bege:#C5B8A2; --bege-escuro:#9E8D70; --bege-claro:#EFE9DF; --alerta:#8B6F47;
+  --fundo:#F8F9FA; --branco:#FFFFFF; --borda:#E3DED3;
+  --texto:#173232; --texto-2:#4D6161;
+  --sobre-escuro:#E8E2D6; --sobre-escuro-2:#B9C3C1;
+  --serif:"Gelasio", Georgia, "Times New Roman", serif;
+  --sans:"Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --r:12px; --r-s:8px;
+  --sombra:0 1px 2px rgba(23,50,50,.05), 0 10px 30px -18px rgba(23,50,50,.35);
+  --dur:.22s;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{font-size:clamp(13px,.8333vw,16px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--fundo);color:var(--texto);font:400 1rem/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:400;margin:0;color:var(--verde)}
+p{margin:0}
+ul,ol{margin:0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--alerta);outline-offset:2px}
+table,.tnum{font-variant-numeric:tabular-nums}
+.skip{position:absolute;left:-999px;top:0;background:var(--verde);color:#fff;padding:.5rem 1rem;z-index:100}
+.skip:focus{left:1rem;top:1rem}
+.ico{width:1.15em;height:1.15em;flex:none;display:inline-block;vertical-align:-.2em}
+
+/* ---------- estrutura 16:9 ---------- */
+.app{height:100vh;height:100dvh;display:grid;grid-template-columns:22% minmax(0,50%) 28%;grid-template-rows:3.75rem minmax(0,1fr) 2.25rem;grid-template-areas:"top top top" "nav main side" "foot foot foot";overflow:hidden}
+.app.is-welcome{grid-template-areas:"top top top" "nav main main" "foot foot foot"}
+.app.is-welcome .resumo{display:none}
+
+.topbar{grid-area:top;display:flex;align-items:center;gap:1.5rem;padding:0 1.5rem;background:var(--verde);color:var(--sobre-escuro);border-bottom:1px solid rgba(197,184,162,.22)}
+.brand{display:flex;align-items:center;gap:1rem;min-width:0}
+.logo-prov{display:inline-flex;align-items:center;gap:.6rem;color:#fff;font-weight:700;letter-spacing:.18em;font-size:1.15rem}
+.logo-prov i{width:1.9rem;height:1.9rem;border:1.5px dashed var(--bege);border-radius:6px;display:grid;place-items:center;font-style:normal;font-size:.5rem;letter-spacing:.02em;color:var(--bege);font-weight:600}
+.brand .sep{width:1px;height:1.6rem;background:rgba(197,184,162,.4)}
+.produto{font-family:var(--serif);font-size:1.1rem;color:#fff;white-space:nowrap}
+.produto em{font-style:normal;color:var(--bege)}
+.etapa-atual{margin-left:auto;font-size:.85rem;color:var(--sobre-escuro-2);white-space:nowrap}
+.etapa-atual b{color:#fff;font-weight:600}
+.top-actions{display:flex;align-items:center;gap:.75rem}
+.btn--top{background:transparent;border:1px solid rgba(197,184,162,.6);color:#fff;border-radius:999px;padding:.35rem 1rem;font-size:.85rem;cursor:pointer}
+.btn--top:hover{background:rgba(255,255,255,.08)}
+
+.aviso-tela{display:none;align-items:center;gap:.6rem;padding:.6rem 1rem;background:var(--bege-claro);border-bottom:1px solid var(--borda);font-size:.88rem}
+
+.nav{grid-area:nav;background:var(--branco);border-right:1px solid var(--borda);display:flex;flex-direction:column;padding:1.5rem 1.1rem 1.1rem;overflow:auto;min-height:0;scrollbar-width:thin}
+.nav-head{padding:0 .5rem 1.1rem}
+.progress{height:4px;background:var(--bege-claro);border-radius:4px;overflow:hidden;margin:.55rem 0 .4rem}
+.progress-bar{height:100%;width:14%;background:var(--verde);border-radius:4px;transition:width .4s ease}
+.progress-txt{font-size:.8rem;color:var(--texto-2)}
+.steps{list-style:none;padding:0;display:flex;flex-direction:column;gap:.15rem}
+.step{width:100%;display:flex;align-items:center;gap:.85rem;padding:.55rem .5rem;border:0;background:transparent;border-radius:10px;text-align:left;cursor:pointer}
+.step:hover:not(:disabled){background:var(--fundo)}
+.step:disabled{cursor:not-allowed;opacity:.5}
+.step-n{flex:none;width:2.05rem;height:2.05rem;border-radius:50%;display:grid;place-items:center;font-family:var(--serif);font-size:.85rem;background:var(--fundo);border:1px solid var(--borda);color:var(--texto-2);transition:all var(--dur)}
+.step-t{display:flex;flex-direction:column;line-height:1.25;min-width:0}
+.step-t b{font-weight:600;font-size:.95rem}
+.step-t small{font-size:.78rem;color:var(--texto-2)}
+.step.is-current{background:var(--verde-tint)}
+.step.is-current .step-n{background:var(--verde);color:var(--bege);border-color:var(--verde);box-shadow:0 0 0 3px var(--bege-claro)}
+.step.is-done .step-n{background:var(--bege-claro);border-color:var(--bege);color:var(--verde)}
+.nav-foot{margin-top:auto;padding:1rem .5rem 0;border-top:1px solid var(--borda);display:flex;flex-direction:column;gap:.55rem;font-size:.78rem;color:var(--texto-2)}
+.dado{display:flex;gap:.55rem;align-items:flex-start;line-height:1.35}
+.dot{flex:none;width:.5rem;height:.5rem;border-radius:50%;background:var(--verde);margin-top:.35em}
+
+.main{grid-area:main;overflow:auto;min-height:0;padding:2rem 2.5rem 2.5rem;scrollbar-width:thin;scrollbar-color:var(--bege) transparent;outline:none}
+.tela{animation:entra .28s ease both;max-width:62rem}
+@keyframes entra{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.tela-head{margin-bottom:1.4rem}
+.eyebrow{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--alerta);margin-bottom:.45rem}
+.tela-head h2{font-size:2rem;line-height:1.15}
+.tela-head h2:focus{outline:none}
+.tela-head p{margin-top:.5rem;color:var(--texto-2);max-width:46rem}
+
+.resumo{grid-area:side;background:var(--verde);color:var(--sobre-escuro);overflow:auto;min-height:0;padding:1.6rem 1.5rem 2rem;scrollbar-width:thin;scrollbar-color:rgba(197,184,162,.45) transparent;background-image:radial-gradient(120% 60% at 100% 0%,rgba(197,184,162,.12),transparent 60%)}
+.r-titulo{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+.r-titulo h3{font-family:var(--sans);font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--bege);font-weight:700}
+.ao-vivo{font-size:.72rem;color:var(--sobre-escuro-2);display:flex;align-items:center;gap:.4rem}
+.ao-vivo::before{content:"";width:.45rem;height:.45rem;border-radius:50%;background:var(--bege);animation:pulso 2.4s ease-in-out infinite}
+.ilustrativo{font-size:.72rem;color:var(--sobre-escuro-2);border:1px dashed rgba(197,184,162,.5);border-radius:999px;padding:.05rem .55rem}
+@keyframes pulso{50%{opacity:.25}}
+.bn{padding:.95rem 0;border-top:1px solid rgba(197,184,162,.2)}
+.bn:first-of-type{border-top:0}
+.bn-label{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--bege);font-weight:700}
+.bn-valor{font-family:var(--serif);font-size:2.35rem;line-height:1.12;color:#fff;margin-top:.2rem;display:inline-block}
+.bn-valor small{font-size:.5em;color:var(--sobre-escuro-2);margin-left:.15em}
+.bn-sub{font-size:.85rem;color:var(--sobre-escuro-2);margin-top:.15rem}
+.bn-grid{display:grid;grid-template-columns:1fr 1fr;gap:.55rem 1rem;margin-top:.55rem}
+.bn-grid div{display:flex;flex-direction:column}
+.bn-grid span{font-size:.76rem;color:var(--sobre-escuro-2)}
+.bn-grid b{font-family:var(--serif);font-weight:400;font-size:1.3rem;color:#fff}
+.memo{background:none;border:0;padding:0;color:inherit;cursor:pointer;text-align:left;border-bottom:1px dashed rgba(197,184,162,.55);font:inherit}
+.memo:hover{border-bottom-color:var(--bege)}
+.memo.bn-valor{font-family:var(--serif);font-size:2.35rem;line-height:1.12;color:#fff}
+.memo-claro{background:none;border:0;padding:0;color:inherit;cursor:pointer;font:inherit;border-bottom:1px dashed var(--bege-escuro)}
+.r-sec{margin-top:1.25rem}
+.r-sec > h4{font-family:var(--sans);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--bege);font-weight:700;margin-bottom:.5rem}
+.r-alerta{display:flex;gap:.7rem;padding:.75rem .85rem;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(197,184,162,.18);font-size:.86rem;line-height:1.4;margin-top:.5rem;color:var(--sobre-escuro)}
+.r-alerta .ico{color:var(--bege);margin-top:.1rem}
+.r-alerta b{color:#fff;font-weight:600}
+.r-alerta .risco,.r-alerta .selo{flex:none;align-self:flex-start;white-space:nowrap}
+.r-lista{list-style:none;padding:0;display:flex;flex-direction:column;gap:.45rem;font-size:.86rem}
+.r-lista li{display:flex;gap:.55rem;align-items:flex-start}
+.r-lista .ico{color:var(--bege);margin-top:.12rem}
+.r-tabela{width:100%;border-collapse:collapse;font-size:.86rem;margin-top:.4rem}
+.r-tabela td{padding:.45rem 0;border-top:1px solid rgba(197,184,162,.18)}
+.r-tabela td:last-child{text-align:right;white-space:nowrap;padding-left:.8rem}
+.ok-txt{color:#fff;font-weight:600}
+.r-cta{margin-top:1.4rem;padding:1rem;border-radius:12px;background:var(--bege-claro);color:var(--verde)}
+.r-cta p{font-family:var(--serif);font-size:1.05rem;line-height:1.35}
+.r-botoes{display:flex;flex-direction:column;gap:.5rem;margin-top:1rem}
+
+.rodape{grid-area:foot;display:flex;align-items:center;justify-content:center;gap:1rem;padding:0 1.5rem;background:#fff;border-top:1px solid var(--borda);font-size:.8rem;color:var(--texto-2)}
+
+/* ---------- componentes ---------- */
+.card{background:var(--branco);border:1px solid var(--borda);border-radius:var(--r);padding:1.2rem 1.35rem;box-shadow:var(--sombra)}
+.stack{display:flex;flex-direction:column;gap:1rem}
+.bloco{margin-top:1.4rem}
+.bloco-t{font-family:var(--serif);font-size:1.25rem;margin-bottom:.7rem;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.field{display:flex;flex-direction:column;gap:.35rem;min-width:0;border:0;padding:0;margin:0}
+.field > label,.field > legend,.lbl{font-weight:600;font-size:.9rem;padding:0}
+.ajuda{font-size:.82rem;color:var(--texto-2);line-height:1.4}
+.input,select.input{height:2.55rem;width:100%;border:1px solid var(--borda);background:#fff;border-radius:var(--r-s);padding:0 .75rem;transition:border-color var(--dur),box-shadow var(--dur);min-width:0}
+select.input{appearance:none;-webkit-appearance:none;padding-right:2rem;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 8l4.5 4.5L14.5 8' fill='none' stroke='%23173232' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right .6rem center/1rem}
+select.input:disabled{background-color:var(--fundo);color:var(--texto-2);cursor:not-allowed}
+.input:hover{border-color:var(--bege)}
+.input:focus{outline:none;border-color:var(--verde);box-shadow:0 0 0 3px rgba(197,184,162,.45)}
+.iw{display:flex;align-items:stretch;border:1px solid var(--borda);border-radius:var(--r-s);background:#fff;overflow:hidden;height:2.55rem;transition:border-color var(--dur),box-shadow var(--dur);min-width:0}
+.iw:hover{border-color:var(--bege)}
+.iw span{display:grid;place-items:center;padding:0 .65rem;background:var(--fundo);color:var(--texto-2);font-size:.84rem;white-space:nowrap}
+.iw span:first-child{border-right:1px solid var(--borda)}
+.iw span:last-child:not(:first-child){border-left:1px solid var(--borda)}
+.iw input{border:0;flex:1;min-width:0;padding:0 .65rem;background:transparent;text-align:right;font-variant-numeric:tabular-nums}
+.iw input:focus{outline:none}
+.iw:focus-within{border-color:var(--verde);box-shadow:0 0 0 3px rgba(197,184,162,.45)}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+
+.opcoes{display:grid;gap:.7rem}
+.opcoes--2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.opcoes--3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.opcao{position:relative;display:flex;flex-direction:column;gap:.25rem;padding:.9rem 2.2rem .9rem 1rem;border:1px solid var(--borda);border-radius:var(--r);background:#fff;cursor:pointer;transition:border-color var(--dur),box-shadow var(--dur),background var(--dur)}
+.opcao input{position:absolute;opacity:0;pointer-events:none}
+.opcao:hover{border-color:var(--bege)}
+.opcao:has(input:checked){border-color:var(--verde);box-shadow:inset 0 0 0 1px var(--verde);background:linear-gradient(180deg,#fff,var(--verde-tint))}
+.opcao:has(input:focus-visible){outline:2px solid var(--alerta);outline-offset:2px}
+.opcao b{font-weight:600}
+.opcao small{color:var(--texto-2);font-size:.82rem;line-height:1.38}
+.opcao .marca{position:absolute;top:.95rem;right:.85rem;width:1rem;height:1rem;border-radius:50%;border:1.5px solid var(--bege-escuro);transition:border var(--dur)}
+.opcao:has(input:checked) .marca{border:5px solid var(--verde)}
+.opcao .tag-en{font-size:.74rem;color:var(--alerta);font-weight:700;letter-spacing:.04em}
+
+.seg{display:inline-flex;padding:3px;background:var(--fundo);border:1px solid var(--borda);border-radius:999px;gap:2px}
+.seg button{border:0;background:transparent;padding:.3rem .9rem;border-radius:999px;font-size:.85rem;cursor:pointer;color:var(--texto-2);font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--verde);color:#fff}
+
+.callout{display:flex;gap:.85rem;padding:.95rem 1.15rem;border-radius:var(--r);background:var(--bege-claro);border-left:4px solid var(--alerta)}
+.callout .ico{color:var(--alerta);margin-top:.15rem;width:1.25rem;height:1.25rem}
+.callout h4{font-family:var(--sans);font-weight:700;font-size:.95rem;margin-bottom:.15rem}
+.callout p{font-size:.9rem;color:var(--texto)}
+.callout p + p{margin-top:.4rem}
+.callout--verde{background:var(--verde-tint);border-left-color:var(--verde)}
+.callout--verde .ico{color:var(--verde)}
+.callout--branco{background:#fff;border:1px solid var(--borda);border-left:4px solid var(--verde)}
+.callout--branco .ico{color:var(--verde)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border-radius:999px;padding:.6rem 1.25rem;font-weight:600;cursor:pointer;border:1px solid transparent;transition:background var(--dur),border-color var(--dur),transform var(--dur);text-decoration:none;font-size:.95rem}
+.btn:active{transform:translateY(1px)}
+.btn--primary{background:var(--verde);color:#fff}
+.btn--primary:hover{background:var(--verde-3)}
+.btn--ghost{background:#fff;border-color:var(--borda);color:var(--verde)}
+.btn--ghost:hover{border-color:var(--verde)}
+.btn--bege{background:var(--bege);color:var(--verde)}
+.btn--bege:hover{background:#d3c8b5}
+.btn--claro{background:transparent;border-color:rgba(197,184,162,.55);color:#fff}
+.btn--claro:hover{background:rgba(255,255,255,.07)}
+.btn--lg{padding:.85rem 1.8rem;font-size:1.05rem}
+.btn--sm{padding:.4rem .9rem;font-size:.85rem}
+.link{background:none;border:0;padding:0;color:var(--verde);text-decoration:underline;text-decoration-color:var(--bege-escuro);text-underline-offset:3px;cursor:pointer;font-weight:600;font-size:inherit}
+.link--claro{color:#fff;text-decoration-color:var(--bege)}
+
+.selo{display:inline-flex;align-items:center;gap:.35em;font-family:var(--sans);font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:.22em .65em;border-radius:999px;line-height:1.45;white-space:nowrap;border:1px solid transparent;vertical-align:middle}
+.selo .ico{width:1.05em;height:1.05em}
+.selo--ok{background:var(--verde);color:var(--bege)}
+.selo--pend{background:var(--alerta);color:#fff}
+.selo--aprox{background:var(--bege-claro);color:var(--verde);border-color:var(--bege)}
+.selo--prem{background:#fff;color:var(--verde);border:1px dashed var(--alerta)}
+.selo--fato{background:var(--verde-tint);color:var(--verde);border-color:#cfdad7}
+.selo--ex{background:var(--bege);color:var(--verde)}
+.selo--falta{background:#fff;color:var(--alerta);border-color:var(--alerta)}
+.selo--proto{background:transparent;border-color:var(--bege);color:var(--bege)}
+.selo--estado{background:var(--bege-claro);color:var(--verde);border-color:var(--bege);text-transform:none;letter-spacing:0;font-size:.8rem;font-weight:600;padding:.3em .8em}
+.resumo .selo--estado{background:rgba(197,184,162,.14);color:#fff;border-color:rgba(197,184,162,.5)}
+.risco{display:inline-flex;align-items:center;gap:.35em;font-size:.7rem;font-weight:700;padding:.2em .6em;border-radius:6px;letter-spacing:.03em}
+.risco--baixo{background:var(--verde);color:var(--bege)}
+.risco--medio{background:var(--bege);color:var(--verde)}
+.risco--alto{background:var(--alerta);color:#fff}
+
+.tabela-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--borda);background:#fff;box-shadow:var(--sombra)}
+.tabela{width:100%;border-collapse:collapse;font-size:.86rem}
+.tabela th{background:var(--verde);color:var(--bege);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;text-align:left;padding:.65rem .75rem;vertical-align:bottom}
+.tabela th small{display:block;text-transform:none;letter-spacing:0;font-size:.8rem;font-weight:400;color:var(--sobre-escuro)}
+.tabela td{padding:.6rem .75rem;border-top:1px solid var(--borda);vertical-align:top}
+.tabela tbody tr:nth-child(even) td{background:#FBFBFA}
+.tabela .r{text-align:right}
+.tabela tfoot td{font-weight:700;background:var(--bege-claro);border-top:1px solid var(--bege)}
+.tabela td small{display:block;color:var(--texto-2);font-size:.78rem}
+.nota{font-size:.78rem;color:var(--texto-2);margin-top:.5rem;line-height:1.4}
+
+details.avancado{border:1px solid var(--borda);border-radius:var(--r);background:#fff}
+details.avancado > summary{list-style:none;cursor:pointer;padding:.85rem 1.1rem;display:flex;align-items:center;gap:.6rem;font-weight:600;flex-wrap:wrap}
+details.avancado > summary::-webkit-details-marker{display:none}
+details.avancado > summary::after{content:"";margin-left:auto;width:.55rem;height:.55rem;border-right:1.6px solid var(--verde);border-bottom:1.6px solid var(--verde);transform:rotate(45deg);transition:transform var(--dur)}
+details.avancado[open] > summary::after{transform:rotate(-135deg)}
+details.avancado > summary small{font-weight:400;color:var(--texto-2);font-size:.82rem}
+.avancado-corpo{padding:0 1.1rem 1.1rem;display:flex;flex-direction:column;gap:1rem;border-top:1px solid var(--borda);padding-top:1rem}
+
+/* ---------- boas-vindas ---------- */
+.tela--welcome{max-width:none;height:100%}
+.welcome-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:2.5rem;min-height:100%;align-items:center}
+.welcome-main h1{font-size:2.9rem;line-height:1.1;margin-top:.2rem;max-width:34rem}
+.lead{font-size:1.12rem;color:var(--texto-2);margin-top:1rem;max-width:34rem}
+.tres{list-style:none;padding:0;margin-top:1.6rem;display:flex;flex-direction:column;gap:.85rem;max-width:36rem}
+.tres li{display:flex;gap:.9rem;align-items:flex-start}
+.tres li > span{flex:none;width:2.1rem;height:2.1rem;border-radius:50%;background:var(--verde);color:var(--bege);display:grid;place-items:center;font-family:var(--serif)}
+.tres p{padding-top:.25rem}
+.pills{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.6rem}
+.pills span{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--borda);background:#fff;border-radius:999px;padding:.3rem .8rem;font-size:.84rem;font-weight:600}
+.pills .ico{color:var(--verde)}
+.cta{display:flex;align-items:center;gap:1.2rem;margin-top:2rem;flex-wrap:wrap}
+.welcome-side{display:flex;flex-direction:column;gap:1rem}
+.aviso-card{background:var(--verde);color:var(--sobre-escuro);border-radius:16px;padding:1.6rem 1.7rem;box-shadow:0 30px 60px -35px rgba(23,50,50,.8);background-image:radial-gradient(90% 70% at 100% 0%,rgba(197,184,162,.14),transparent 60%)}
+.pill-out{display:inline-block;border:1px solid var(--bege);color:var(--bege);border-radius:999px;padding:.25rem .85rem;font-family:var(--serif);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.9rem}
+.aviso-card p{font-size:.98rem;line-height:1.55}
+.aviso-card b{color:#fff}
+.priv-card{border:1px solid var(--borda);background:#fff;border-radius:16px;padding:1.2rem 1.4rem}
+.priv-card h4{font-family:var(--sans);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--alerta);font-weight:700;margin-bottom:.6rem}
+.priv-card ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:.45rem;font-size:.92rem}
+.priv-card li{display:flex;gap:.6rem}
+.priv-card .ico{color:var(--verde);margin-top:.15rem}
+
+/* ---------- investimentos ---------- */
+.inv{background:#fff;border:1px solid var(--borda);border-radius:var(--r);padding:1rem 1.1rem;box-shadow:var(--sombra);position:relative}
+.inv-cab{display:flex;align-items:center;gap:.6rem;margin-bottom:.7rem}
+.inv-cab .n{font-family:var(--serif);color:var(--alerta);font-size:.9rem}
+.inv-cab .x{margin-left:auto;border:0;background:transparent;width:1.8rem;height:1.8rem;border-radius:50%;cursor:pointer;color:var(--texto-2);font-size:1.1rem;line-height:1}
+.inv-cab .x:hover{background:var(--fundo);color:var(--verde)}
+.inv-l1{display:grid;grid-template-columns:minmax(0,2.1fr) minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr);gap:.7rem}
+.inv-l2{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr) minmax(0,1fr);gap:.7rem;margin-top:.7rem}
+.inv-l3{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,2fr);gap:.7rem;margin-top:.7rem;align-items:end}
+.inv-l3 .link{justify-self:end;font-size:.8rem;padding-bottom:.6rem}
+.inv .field > label{font-size:.78rem;color:var(--texto-2);font-weight:600}
+.inv .input,.inv .iw{height:2.3rem;font-size:.9rem}
+.rem{display:flex;gap:.4rem;min-width:0}
+.rem select.input{flex:0 0 7.8rem;width:7.8rem}
+.rem .iw{flex:1}
+.inv-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.8rem;padding-top:.7rem;border-top:1px dashed var(--borda)}
+.tag{font-size:.76rem;background:var(--fundo);border:1px solid var(--borda);border-radius:6px;padding:.15rem .5rem;color:var(--texto-2)}
+.inv-acoes{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+
+/* ---------- cenário ---------- */
+.traj input{width:100%;border:1px solid transparent;background:transparent;border-radius:6px;text-align:right;padding:.3rem .4rem;font-variant-numeric:tabular-nums}
+.traj input:not([readonly]){border-color:var(--borda);background:#fff}
+.traj input:focus{outline:none;border-color:var(--verde)}
+.traj td.ext input{color:var(--alerta);font-style:italic}
+.range-row{display:flex;align-items:center;gap:1rem}
+input[type=range]{flex:1;accent-color:var(--verde)}
+.range-val{font-family:var(--serif);font-size:1.25rem;min-width:9rem}
+
+/* ---------- resultados ---------- */
+.tabs{display:flex;gap:.15rem;border-bottom:1px solid var(--borda);margin-bottom:1.2rem}
+.tab{border:0;background:transparent;padding:.65rem .8rem;font-weight:600;color:var(--texto-2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;font-size:.95rem;white-space:nowrap}
+.tab:hover{color:var(--verde)}
+.tab[aria-selected="true"]{color:var(--verde);border-bottom-color:var(--verde)}
+.pend-strip{display:grid;grid-template-columns:auto 1fr 1fr;gap:.6rem 1rem;align-items:center;padding:.85rem 1rem;border-radius:var(--r);background:var(--bege-claro);border:1px solid var(--bege);margin-bottom:1.1rem;font-size:.86rem}
+.pend-strip .alt{background:#fff;border:1px solid var(--borda);border-radius:10px;padding:.5rem .7rem;cursor:pointer;text-align:left}
+.pend-strip .alt[aria-pressed="true"]{border-color:var(--verde);box-shadow:inset 0 0 0 1px var(--verde)}
+.pend-strip .alt > b{font-family:var(--serif);font-weight:400;font-size:1.1rem;display:block}
+.pend-strip .alt .ajuda b{font-weight:700}
+.pend-strip .pend-nota{grid-column:2/4}
+.frase{font-family:var(--serif);font-size:1.15rem;line-height:1.45;padding:1rem 1.2rem;border-left:4px solid var(--alerta);background:var(--bege-claro);border-radius:0 var(--r) var(--r) 0}
+.frase b{font-weight:600}
+
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart .grid{stroke:var(--borda);stroke-width:1}
+.chart .axis{stroke:#9AA8A6;stroke-width:1}
+.chart text{font-family:var(--sans);font-size:12px;fill:var(--texto-2)}
+.chart .axis-title{font-size:10.5px;font-weight:700;letter-spacing:.1em;fill:var(--alerta)}
+.chart .hover-line{stroke:var(--verde);stroke-width:1;stroke-dasharray:3 3}
+.serie{fill:none;stroke-width:2.6;stroke-linejoin:round;stroke-linecap:round}
+.pt{stroke:#fff;stroke-width:1.5}
+.s-melhor{stroke:var(--verde)} .pt.s-melhor{fill:var(--verde)}
+.s-atual{stroke:var(--alerta);stroke-dasharray:7 5} .pt.s-atual{fill:var(--alerta)}
+.s-outra{stroke:var(--bege-escuro);stroke-dasharray:2 4} .pt.s-outra{fill:var(--bege-escuro)}
+.b-teto{fill:var(--verde-tint);stroke:var(--verde);stroke-width:1}
+.b-irbr{fill:var(--bege);stroke:var(--bege-escuro);stroke-width:1}
+.b-usado{fill:var(--verde)}
+.s-saldo{stroke:var(--alerta);stroke-width:2.4;fill:none} .pt.s-saldo{fill:var(--alerta)}
+.chart .val{font-size:11px;font-weight:700;fill:var(--verde)}
+.chart--escuro text{fill:var(--sobre-escuro-2)}
+.chart--escuro .grid{stroke:rgba(197,184,162,.18)}
+.chart--escuro .axis{stroke:rgba(197,184,162,.5)}
+.chart--escuro .axis-title{fill:var(--bege)}
+.chart--escuro .serie{stroke:var(--bege)}
+.chart--escuro .pt{fill:var(--bege);stroke:var(--verde)}
+.tip{position:absolute;pointer-events:none;background:var(--verde);color:#fff;padding:.55rem .7rem;border-radius:8px;font-size:.8rem;line-height:1.45;box-shadow:0 10px 30px -10px rgba(0,0,0,.45);white-space:nowrap;opacity:0;transition:opacity .12s;z-index:3;border:1px solid rgba(197,184,162,.4)}
+.tip b{font-weight:700}
+.sw{display:inline-block;width:.7rem;height:.7rem;border-radius:2px;margin-right:.4rem;vertical-align:-.05em}
+.legend{display:flex;gap:1.1rem;flex-wrap:wrap;font-size:.82rem;margin:.2rem 0 .4rem;color:var(--texto)}
+.legend span{display:inline-flex;align-items:center;gap:.45rem}
+.legend i{display:inline-block;width:1.5rem;height:0;border-top:2.6px solid}
+.legend i.box{width:.8rem;height:.8rem;border:1px solid}
+
+.decomp{display:flex;flex-direction:column;gap:.45rem;margin-top:.6rem}
+.dc-row{display:grid;grid-template-columns:11rem 1fr 7rem;gap:.8rem;align-items:center;font-size:.88rem}
+.dc-track{position:relative;height:1.1rem;background:linear-gradient(90deg,transparent calc(50% - .5px),var(--bege-escuro) calc(50% - .5px),var(--bege-escuro) calc(50% + .5px),transparent calc(50% + .5px))}
+.dc-bar{position:absolute;top:.15rem;bottom:.15rem;border-radius:3px}
+.dc-bar.pos{background:var(--verde)}
+.dc-bar.neg{background:var(--alerta)}
+.dc-v{text-align:right;font-weight:600}
+.dc-total{border-top:1px solid var(--borda);padding-top:.45rem;font-weight:700}
+
+.estrategias{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.est{background:#fff;border:1px solid var(--borda);border-radius:var(--r);padding:1.1rem 1.2rem;display:flex;flex-direction:column;gap:.6rem;box-shadow:var(--sombra)}
+.est.is-melhor{border-color:var(--verde);box-shadow:inset 0 0 0 1px var(--verde),var(--sombra)}
+.est h4{font-family:var(--serif);font-size:1.15rem;line-height:1.25}
+.est .v{font-family:var(--serif);font-size:1.9rem;line-height:1.1}
+.est .v small{font-family:var(--sans);font-size:.85rem;margin-left:.4rem}
+.est dl{display:grid;grid-template-columns:1fr auto;gap:.3rem .8rem;margin:0;font-size:.86rem}
+.est dt{color:var(--texto-2)} .est dd{margin:0;text-align:right;font-weight:600}
+.est p{font-size:.92rem}
+.est .plano{font-size:.82rem;color:var(--texto-2);line-height:1.4}
+.dif-pos{color:var(--verde);font-weight:700}
+.dif-neg{color:var(--alerta);font-weight:700}
+
+.troca-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.2fr) minmax(0,1fr);gap:.8rem}
+.troca-fixo{display:flex;align-items:center;height:2.55rem;padding:0 .75rem;border:1px solid var(--borda);border-radius:var(--r-s);background:var(--fundo);color:var(--texto-2);font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.troca-res{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1rem}
+.mini{border:1px solid var(--borda);border-radius:10px;padding:.8rem 1rem;background:var(--fundo);display:flex;flex-direction:column}
+.mini span{font-size:.8rem;color:var(--texto-2)}
+.mini b{font-family:var(--serif);font-weight:400;font-size:1.6rem;line-height:1.2}
+
+.glossario{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}
+.gl{background:#fff;border:1px solid var(--borda);border-left:4px solid var(--verde);border-radius:var(--r);padding:.85rem 1rem}
+.gl b{display:block;font-weight:700;margin-bottom:.2rem}
+.gl p{font-size:.88rem;color:var(--texto-2)}
+.subnav{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.2rem}
+.subnav a{font-size:.84rem;font-weight:600;color:var(--verde);text-decoration:none;border:1px solid var(--borda);background:#fff;border-radius:999px;padding:.3rem .8rem}
+.subnav a:hover{border-color:var(--verde)}
+.pendencias{list-style:none;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}
+.pendencias li{background:var(--bege-claro);border-left:4px solid var(--alerta);border-radius:var(--r);padding:.8rem 1rem;font-size:.88rem}
+.pendencias li b{display:block;margin:.35rem 0 .1rem}
+
+/* ---------- diálogos ---------- */
+dialog{border:0;border-radius:16px;padding:0;width:min(46rem,calc(100vw - 2rem));box-shadow:0 30px 80px -20px rgba(23,50,50,.55);color:var(--texto)}
+dialog::backdrop{background:rgba(23,50,50,.55);backdrop-filter:blur(2px)}
+.dlg-head{background:var(--verde);color:#fff;padding:1.2rem 1.5rem;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;background-image:radial-gradient(90% 90% at 100% 0%,rgba(197,184,162,.16),transparent 60%)}
+.dlg-head h3{color:#fff;font-size:1.35rem}
+.dlg-head .eyebrow{color:var(--bege)}
+.dlg-x{border:1px solid rgba(197,184,162,.5);background:transparent;color:#fff;border-radius:50%;width:2rem;height:2rem;cursor:pointer;flex:none;font-size:1rem}
+.dlg-body{padding:1.3rem 1.5rem 1.5rem;max-height:70vh;overflow:auto}
+.formula{font-family:var(--serif);font-size:1.08rem;line-height:1.5;background:var(--fundo);border:1px solid var(--borda);border-radius:10px;padding:.85rem 1rem}
+.formula .res{display:block;margin-top:.4rem;font-size:1.35rem;color:var(--verde)}
+.insumos{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:.4rem}
+.insumos td{padding:.5rem .3rem;border-top:1px solid var(--borda);vertical-align:top}
+.insumos td:nth-child(2){text-align:right;font-weight:600;white-space:nowrap}
+.insumos td:last-child{text-align:right;width:1%;white-space:nowrap}
+.dlg-sec{margin-top:1.1rem}
+.dlg-sec > h4{font-family:var(--sans);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--alerta);font-weight:700;margin-bottom:.3rem}
+.base-legal{list-style:none;padding:0;font-size:.88rem;display:flex;flex-direction:column;gap:.25rem}
+
+.toast{position:fixed;left:50%;bottom:3.2rem;transform:translateX(-50%) translateY(1rem);background:var(--verde);color:#fff;padding:.7rem 1.1rem;border-radius:10px;font-size:.88rem;opacity:0;transition:all .25s;z-index:80;max-width:min(36rem,90vw);box-shadow:0 20px 40px -20px rgba(0,0,0,.5);pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%)}
+
+/* controle "ver em" — só no protótipo */
+.viewer-ctl{position:relative}
+.viewer-menu{position:absolute;right:0;top:calc(100% + .5rem);z-index:50;display:flex;flex-direction:column;min-width:15rem;background:#fff;border:1px solid var(--borda);border-radius:12px;padding:.4rem;box-shadow:0 20px 50px -20px rgba(23,50,50,.5)}
+.viewer-menu > span{font-weight:700;color:var(--alerta);letter-spacing:.1em;text-transform:uppercase;font-size:.66rem;padding:.35rem .6rem .25rem}
+.viewer-menu button{border:0;background:transparent;border-radius:8px;padding:.45rem .6rem;cursor:pointer;font-weight:600;color:var(--verde);text-align:left;font-size:.86rem;display:flex;justify-content:space-between;gap:1rem}
+.viewer-menu button small{color:var(--texto-2);font-weight:400}
+.viewer-menu button:hover{background:var(--verde-tint)}
+.selo--proto{cursor:pointer}
+.viewer{position:fixed;inset:0;z-index:60;background:#0e2020}
+.viewer iframe{position:absolute;left:50%;top:calc(50% + 1.2rem);border:0;background:#fff;box-shadow:0 20px 60px rgba(0,0,0,.55);transform-origin:center center}
+.viewer-bar{position:absolute;top:.7rem;left:50%;transform:translateX(-50%);color:#fff;font-size:.85rem;display:flex;gap:.9rem;align-items:center;white-space:nowrap}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- telas pequenas: layout empilhado ---------- */
+@media (max-width:1099px),(max-height:500px){
+  html{font-size:15px}
+  .app,.app.is-welcome{display:block;height:auto;overflow:visible}
+  .topbar{position:sticky;top:0;z-index:5;flex-wrap:wrap;padding:.6rem 1rem;gap:.4rem 1rem}
+  .etapa-atual{display:none}
+  .aviso-tela{display:flex}
+  .nav{border-right:0;border-bottom:1px solid var(--borda);padding:.9rem 1rem}
+  .nav-head{padding:0 0 .6rem}
+  .steps{flex-direction:row;flex-wrap:wrap;gap:.35rem}
+  .step{width:auto;padding:.3rem .65rem .3rem .3rem;border:1px solid var(--borda);gap:.45rem}
+  .step-n{width:1.6rem;height:1.6rem;font-size:.75rem}
+  .step-t small{display:none}
+  .step-t b{font-size:.85rem}
+  .nav-foot{display:none}
+  .main{padding:1.4rem 1rem 2rem;overflow:visible}
+  .resumo{padding:1.4rem 1rem;overflow:visible}
+  .welcome-grid,.grid-2,.grid-3,.estrategias,.glossario,.pendencias,.troca-grid,.troca-res{grid-template-columns:1fr}
+  .welcome-main h1{font-size:2.1rem}
+  .inv-l1,.inv-l2,.inv-l3,.opcoes--3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .inv-l2 .field:first-child{grid-column:1/-1}
+  .pend-strip{grid-template-columns:1fr}
+  .pend-strip .pend-nota{grid-column:auto}
+  .pend-strip .selo{justify-self:start}
+  .dc-row{grid-template-columns:8rem 1fr 6rem}
+  .tabs{overflow-x:auto}
+  .rodape{position:sticky;bottom:0;flex-wrap:wrap;padding:.5rem 1rem;text-align:center;gap:.2rem 1rem}
+}
+@media (max-width:560px){
+  .opcoes--2,.opcoes--3,.inv-l1,.inv-l2,.inv-l3{grid-template-columns:1fr}
+  .produto{font-size:.95rem;white-space:normal}
+  .top-actions .selo--proto{display:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Pular para o conteúdo</a>
+
+<div class="app is-welcome" id="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="produto">Simulador Sacre de Eficiência <em>Brasil–EUA</em></span>
+    </div>
+    <div class="etapa-atual" id="etapaAtual" aria-live="polite">Etapa <b>1 de 7</b> · Boas-vindas</div>
+    <div class="top-actions">
+      <div class="viewer-ctl" id="viewerCtl">
+        <button class="selo selo--proto" type="button" id="btnProto" aria-expanded="false" aria-controls="viewerMenu">Protótipo · valores ilustrativos ▾</button>
+        <div class="viewer-menu" id="viewerMenu" hidden>
+          <span>Ver o protótipo em</span>
+          <button type="button" data-view="1920x1080">1920 × 1080 <small>base do design</small></button>
+          <button type="button" data-view="1366x768">1366 × 768 <small>mínimo garantido</small></button>
+          <button type="button" data-view="1366x650">1366 × 650 <small>área útil real</small></button>
+          <button type="button" data-view="1536x864">1536 × 864</button>
+          <button type="button" data-view="1440x900">1440 × 900</button>
+          <button type="button" data-view="390x844">390 × 844 <small>celular</small></button>
+        </div>
+      </div>
+      <button class="btn--top" id="btnRecomecar" type="button">Recomeçar</button>
+    </div>
+  </header>
+
+  <div class="aviso-tela" role="note"><i data-ico="info"></i>Melhor experiência no computador. Aqui tudo funciona, em formato empilhado.</div>
+
+  <nav class="nav" aria-label="Etapas da simulação">
+    <div class="nav-head">
+      <span class="eyebrow">Sua simulação</span>
+      <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+      <span class="progress-txt" id="progressTxt">Etapa 1 de 7</span>
+    </div>
+    <ol class="steps" id="steps">
+      <li><button class="step" type="button" data-step="1"><span class="step-n">01</span><span class="step-t"><b>Boas-vindas</b><small>O que o simulador faz</small></span></button></li>
+      <li><button class="step" type="button" data-step="2"><span class="step-n">02</span><span class="step-t"><b>Onde você mora</b><small>Estado, declaração e renda</small></span></button></li>
+      <li><button class="step" type="button" data-step="3"><span class="step-n">03</span><span class="step-t"><b>Sua conta no Brasil</b><small>CNR Light ou Full</small></span></button></li>
+      <li><button class="step" type="button" data-step="4"><span class="step-n">04</span><span class="step-t"><b>Seus investimentos</b><small>Uma linha por aplicação</small></span></button></li>
+      <li><button class="step" type="button" data-step="5"><span class="step-n">05</span><span class="step-t"><b>Cenário</b><small>Mercado, horizonte e liquidez</small></span></button></li>
+      <li><button class="step" type="button" data-step="6"><span class="step-n">06</span><span class="step-t"><b>Resultados</b><small>Carga, crédito e alternativas</small></span></button></li>
+      <li><button class="step" type="button" data-step="7"><span class="step-n">07</span><span class="step-t"><b>Entenda o cálculo</b><small>Regras, fontes e pendências</small></span></button></li>
+    </ol>
+    <div class="nav-foot">
+      <div class="dado"><span class="dot"></span><span>Parâmetros tributários revisados em <b>01/10/2026</b></span></div>
+      <div class="dado"><span class="dot"></span><span>Dados de mercado: BCB (SGS e Focus), coleta de <b>30/09/2026</b></span></div>
+    </div>
+  </nav>
+
+  <main class="main" id="main" tabindex="-1">
+
+    <!-- ===================== 1. BOAS-VINDAS ===================== -->
+    <section class="tela tela--welcome" data-tela="1" aria-labelledby="t1">
+      <div class="welcome-grid">
+        <div class="welcome-main">
+          <span class="eyebrow">Simulador · Brasil–EUA</span>
+          <h1 id="t1" tabindex="-1">Quanto do IR retido no Brasil vira crédito nos EUA?</h1>
+          <p class="lead">Para brasileiros que moram nos EUA, são residentes fiscais lá e investem no Brasil por uma conta de não residente (CNR) Light ou Full.</p>
+          <ol class="tres">
+            <li><span>1</span><p><b>IR no Brasil.</b> Quanto é retido em cada aplicação, conforme o tipo de conta.</p></li>
+            <li><span>2</span><p><b>Crédito nos EUA.</b> Quando os EUA tributam essa renda e quanto do IR brasileiro vira Foreign Tax Credit, com o teto anual e o saldo.</p></li>
+            <li><span>3</span><p><b>Cenários.</b> Estratégias de resgate comparadas e o risco de o crédito se perder.</p></li>
+          </ol>
+          <div class="pills">
+            <span><i data-ico="check"></i>Sem login</span>
+            <span><i data-ico="check"></i>Sem cadastro</span>
+            <span><i data-ico="check"></i>Sem cookies</span>
+            <span><i data-ico="check"></i>Nada é salvo</span>
+          </div>
+          <div class="cta">
+            <button class="btn btn--primary btn--lg" id="btnEntendi" type="button">Entendi, quero simular <i data-ico="seta"></i></button>
+            <span class="ajuda">Leva cerca de 5 minutos.<br>Se preferir, use a carteira de exemplo.</span>
+          </div>
+        </div>
+        <div class="welcome-side">
+          <div class="aviso-card">
+            <span class="pill-out">Aviso obrigatório</span>
+            <p><b>Aviso importante.</b> Esta calculadora não realiza cálculo tributário. É apenas um embasamento para a tomada de decisões financeiras no Brasil. Os resultados são simulações baseadas em regras públicas vigentes na data indicada e em premissas de mercado que podem não se confirmar. Não constituem declaração de imposto, parecer tributário ou recomendação de investimento, e não substituem a orientação de um contador habilitado nos EUA, de um tributarista no Brasil e do seu assessor de investimentos. A Sacre Investimentos, assessoria credenciada ao BTG Pactual, não armazena nenhuma informação digitada nesta página.</p>
+          </div>
+          <div class="priv-card">
+            <h4>Privacidade</h4>
+            <ul>
+              <li><i data-ico="cadeado"></i><span>Não pedimos nome, e-mail, CPF, SSN nem outro dado que identifique você.</span></li>
+              <li><i data-ico="cadeado"></i><span>Nada é enviado a servidor. Sem cookies e sem armazenamento no navegador.</span></li>
+              <li><i data-ico="cadeado"></i><span>A simulação vive só nesta página. Ao fechar, ela se apaga.</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 2. ONDE VOCÊ MORA ===================== -->
+    <section class="tela" data-tela="2" aria-labelledby="t2" hidden>
+      <header class="tela-head">
+        <span class="eyebrow">Etapa 2 · Perfil nos EUA</span>
+        <h2 id="t2" tabindex="-1">Onde você mora nos EUA</h2>
+        <p>O imposto federal é calculado para todos os estados. O estadual entra, exato, nos estados sem imposto sobre juros e dividendos.</p>
+      </header>
+
+      <div class="stack">
+        <div class="callout callout--branco">
+          <i data-ico="info"></i>
+          <div>
+            <h4>Premissa: você é residente fiscal nos EUA</h4>
+            <p>Green card ou teste de presença substancial. <button class="link" type="button" id="btnNaoRes">Não sou residente fiscal nos EUA</button></p>
+            <p id="naoRes" hidden><b>Este simulador não se aplica ao seu caso.</b> As regras usadas aqui valem para quem é tributado nos EUA sobre a renda mundial. Converse com seu assessor.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="grid-2">
+            <div class="field">
+              <label for="selEstado">Estado de residência</label>
+              <select class="input" id="selEstado"></select>
+              <div id="estadoSelo"></div>
+            </div>
+            <div class="field">
+              <span class="lbl">Como funciona o estadual</span>
+              <p class="ajuda">Nos 9 estados marcados como “estado incluído”, o imposto estadual sobre a renda fixa brasileira é zero. Nos demais, o resultado é federal, com alerta e alíquota estadual opcional.</p>
+            </div>
+          </div>
+          <div id="modoB" class="stack" style="margin-top:1rem" hidden>
+            <div class="callout">
+              <i data-ico="alerta"></i>
+              <div>
+                <h4>Seu estado não está incluído neste cálculo.</h4>
+                <p>O resultado considera apenas o imposto federal dos EUA (e a alíquota estadual que você informar, se informar). Seu estado pode cobrar imposto sobre os rendimentos do Brasil e, em geral, não dá crédito pelo IR pago no Brasil. Valide com seu contador como o seu estado trata esses rendimentos.</p>
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="field">
+                <label for="aliqEst">Alíquota estadual estimada sobre estes rendimentos (%) <span class="ajuda">opcional</span></label>
+                <div class="iw"><input id="aliqEst" inputmode="decimal" placeholder="vazio = só federal"><span>%</span></div>
+                <p class="ajuda">Consulte o site do departamento de receita do seu estado ou o seu contador. O simulador não sugere valores por estado.</p>
+              </div>
+              <div class="field">
+                <span class="lbl">Premissas, se você preencher</span>
+                <ul class="ajuda" style="padding-left:1.1rem;display:flex;flex-direction:column;gap:.25rem">
+                  <li>Conservadora: sem crédito estadual pelo IR brasileiro.</li>
+                  <li>A dedução federal do imposto estadual (SALT) não é considerada.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <fieldset class="field">
+            <legend>Situação de declaração (filing status)</legend>
+            <div class="opcoes opcoes--2" style="margin-top:.4rem">
+              <label class="opcao"><input type="radio" name="fs" value="single" checked><span class="marca"></span><span class="tag-en">SINGLE</span><b>Solteiro(a)</b><small>Declara sozinho, sem dependente que dê direito a chefe de família.</small></label>
+              <label class="opcao"><input type="radio" name="fs" value="mfj"><span class="marca"></span><span class="tag-en">MARRIED FILING JOINTLY</span><b>Casado(a), declaração conjunta</b><small>O casal soma as rendas em uma só declaração.</small></label>
+              <label class="opcao"><input type="radio" name="fs" value="mfs"><span class="marca"></span><span class="tag-en">MARRIED FILING SEPARATELY</span><b>Casado(a), declarações separadas</b><small>Cada cônjuge declara a própria renda.</small></label>
+              <label class="opcao"><input type="radio" name="fs" value="hoh"><span class="marca"></span><span class="tag-en">HEAD OF HOUSEHOLD</span><b>Chefe de família</b><small>Solteiro(a) que mantém a casa para um dependente qualificado.</small></label>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="card">
+          <div class="field">
+            <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;justify-content:space-between">
+              <label for="renda" class="lbl">Renda tributável federal estimada, <u>sem</u> os investimentos do Brasil</label>
+              <div class="seg" role="group" aria-label="Forma de informar a renda">
+                <button type="button" aria-pressed="true" data-renda="exata">Valor exato</button>
+                <button type="button" aria-pressed="false" data-renda="faixa">Faixa</button>
+              </div>
+            </div>
+            <div class="grid-2" style="margin-top:.35rem">
+              <div id="rendaExata"><div class="iw"><span>US$</span><input id="renda" value="120.000" inputmode="numeric"></div></div>
+              <div id="rendaFaixa" hidden>
+                <select class="input" aria-label="Faixa de renda tributável">
+                  <option>Até US$ 50 mil (usa US$ 25 mil)</option>
+                  <option>US$ 50 a 100 mil (usa US$ 75 mil)</option>
+                  <option selected>US$ 100 a 150 mil (usa US$ 125 mil)</option>
+                  <option>US$ 150 a 250 mil (usa US$ 200 mil)</option>
+                  <option>US$ 250 a 400 mil (usa US$ 325 mil)</option>
+                  <option>US$ 400 a 650 mil (usa US$ 525 mil)</option>
+                  <option>Acima de US$ 650 mil (informe o valor exato)</option>
+                </select>
+              </div>
+              <div style="display:flex;align-items:center;gap:.5rem"><span class="selo selo--fato">Fato · informado por você</span></div>
+            </div>
+            <p class="ajuda" style="margin-top:.3rem"><b>Renda tributável</b> é a renda bruta menos as deduções. Quem não itemiza usa a dedução padrão: em 2026, US$ 16.100 (solteiro) e US$ 32.200 (casal, declaração conjunta). Exemplo: salário bruto de US$ 136.100, com dedução padrão, dá renda tributável de US$ 120.000.</p>
+          </div>
+        </div>
+
+        <details class="avancado">
+          <summary><i data-ico="ajuste"></i>Avançado: outros dados da sua declaração nos EUA <small>opcional · não são dados dos investimentos no Brasil</small></summary>
+          <div class="avancado-corpo">
+            <div class="callout callout--verde">
+              <i data-ico="info"></i>
+              <div>
+                <h4>Estes campos vêm da sua declaração americana</h4>
+                <p>Os investimentos no Brasil entram na etapa 4. Aqui ficam dados da sua vida fiscal nos EUA que mudam o teto do crédito e o NIIT. Se não souber, deixe em branco: o simulador usa a dedução padrão e considera zero nos demais. Seu contador tem todos esses números.</p>
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="field">
+                <label for="itm">Deduções itemizadas (US$)</label>
+                <div class="iw"><span>US$</span><input id="itm" placeholder="vazio = dedução padrão"></div>
+                <p class="ajuda">Nos EUA, ou você usa a dedução padrão, ou soma as despesas que a lei permite abater: juros da hipoteca da casa, impostos estaduais e locais, doações. Quem faz a soma “itemiza” (Schedule A). Se for o seu caso, informe o total.</p>
+              </div>
+              <div class="field">
+                <label for="ltcg">Ganhos de capital e dividendos qualificados nos EUA (US$ por ano)</label>
+                <div class="iw"><span>US$</span><input id="ltcg" placeholder="0"></div>
+                <p class="ajuda">Lucro na venda de ações, fundos ou imóveis nos EUA e dividendos qualificados. Têm alíquota menor e mudam a conta do teto.</p>
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="field">
+                <label for="opr">Rendas de investimentos em outros países, fora o Brasil (US$ por ano)</label>
+                <div class="iw"><span>US$</span><input id="opr" placeholder="0"></div>
+                <p class="ajuda">Exemplo: juros de uma conta em Portugal. Entram na mesma categoria de crédito do Brasil.</p>
+              </div>
+              <div class="field">
+                <label for="opi">Imposto pago nesses outros países (US$ por ano)</label>
+                <div class="iw"><span>US$</span><input id="opi" placeholder="0"></div>
+                <p class="ajuda">O imposto de renda retido lá sobre essas rendas.</p>
+              </div>
+            </div>
+            <div class="field">
+              <span class="lbl">Crédito de anos anteriores ainda não usado</span>
+              <p class="ajuda">Imposto estrangeiro já declarado que passou do teto e ficou como saldo, de qualquer país, inclusive do Brasil. Está no Schedule B do Form 1116 da sua última declaração.</p>
+              <div class="grid-3">
+                <div class="iw"><span>Ano</span><input value="2024" aria-label="Ano de origem do saldo"></div>
+                <div class="iw"><span>US$</span><input placeholder="0" aria-label="Valor do saldo"></div>
+                <button class="btn btn--ghost btn--sm" type="button">+ Adicionar ano</button>
+              </div>
+            </div>
+            <div class="field">
+              <label for="tl25">Espaço livre no teto de 2025 (US$) <span class="selo selo--prem">proposta</span></label>
+              <div class="grid-2"><div class="iw"><span>US$</span><input id="tl25" placeholder="vazio = 0, conservador"></div><p class="ajuda">Se sobrar crédito em 2026, ele pode voltar 1 ano e abater o imposto de 2025. Seu contador encontra esse espaço no Form 1116 de 2025.</p></div>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ===================== 3. SUA CONTA ===================== -->
+    <section class="tela" data-tela="3" aria-labelledby="t3" hidden>
+      <header class="tela-head">
+        <span class="eyebrow">Etapa 3 · Conta CNR</span>
+        <h2 id="t3" tabindex="-1">Sua conta no Brasil</h2>
+        <p>O tipo de conta muda o IR cobrado no Brasil e, com ele, o tamanho do crédito. Nos EUA, a tributação é a mesma nas duas contas.</p>
+      </header>
+
+      <div class="opcoes opcoes--3">
+        <label class="opcao"><input type="radio" name="conta" value="light" checked><span class="marca"></span><span class="tag-en">CNR LIGHT</span><b>Regras do residente no Brasil</b><small>Tesouro, CDB e debêntures comuns pagam IR pela tabela regressiva, de 22,5% a 15%. LCI, LCA, CRI, CRA e debêntures incentivadas são isentos.</small></label>
+        <label class="opcao"><input type="radio" name="conta" value="full"><span class="marca"></span><span class="tag-en">CNR FULL</span><b>Regime do investidor não residente</b><small>Títulos públicos com 0%. CDB e debêntures comuns com 15%, em qualquer prazo. Inclui ações, FIIs e opções.</small></label>
+        <label class="opcao"><input type="radio" name="conta" value="ambas"><span class="marca"></span><span class="tag-en">COMPARAR</span><b>Comparar Light e Full</b><small>Roda a simulação nas duas contas e mostra o resultado lado a lado.</small></label>
+      </div>
+
+      <div style="display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:.9rem;align-items:center">
+        <button class="link" type="button" id="btnNaoSei">Não sei qual é a minha conta</button>
+        <details class="ajuda"><summary style="cursor:pointer;font-weight:600;color:var(--verde)">Saiba mais: base legal</summary>
+          <p style="margin-top:.4rem"><b>Light:</b> Lei 8.981/1995, art. 78 (mesmas normas do residente); Lei 11.033/2004, arts. 1º e 3º; Lei 12.431/2011. <b>Full:</b> Res. CMN 4.373/2014 e normas sucessoras; Lei 11.312/2006, art. 1º, §1º, I; Lei 12.431/2011, art. 1º; B3, Manual do Investidor Não Residente.</p>
+        </details>
+      </div>
+      <div class="callout callout--verde" id="naoSei" style="margin-top:.9rem" hidden>
+        <i data-ico="info"></i>
+        <div><h4>Pergunte ao seu assessor</h4><p>“Minha conta de não residente é Light ou Full (regime do CMN)?” Enquanto isso, escolha <b>Comparar Light e Full</b> e veja as duas.</p></div>
+      </div>
+
+      <div class="bloco">
+        <div class="bloco-t">O que muda no IR brasileiro</div>
+        <div class="tabela-wrap">
+          <table class="tabela">
+            <thead><tr><th>Produto</th><th>IR no Brasil<small>CNR Light</small></th><th>IR no Brasil<small>CNR Full</small></th><th>Nos EUA</th></tr></thead>
+            <tbody>
+              <tr><td><b>Tesouro</b></td><td>Tabela regressiva, 22,5% a 15%</td><td>0%</td><td>Juros e OID tributados; Full: amplia o teto</td></tr>
+              <tr><td><b>CDB</b></td><td>Tabela regressiva, 22,5% a 15%</td><td>15%</td><td>Juros e OID tributados; IR vira crédito</td></tr>
+              <tr><td><b>Debêntures comuns</b></td><td>Tabela regressiva, 22,5% a 15%</td><td>15%</td><td>Juros e OID tributados; IR vira crédito</td></tr>
+              <tr><td><b>Debêntures incentivadas</b><small>Lei 12.431/2011</small></td><td>Isento <span class="selo selo--ok">Confirmado</span></td><td>0%</td><td>Juros e OID tributados; amplia o teto</td></tr>
+              <tr><td><b>LCI, LCA, CRI e CRA</b></td><td>Isento</td><td>0%</td><td>Juros e OID tributados; amplia o teto</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="nota">Previdência privada, ações, FIIs e imóveis ficam para a Fase 2. Conta em nome de empresa (por exemplo, LLC) ou investidor em paraíso fiscal: o simulador não se aplica.</p>
+      </div>
+    </section>
+
+    <!-- ===================== 4. INVESTIMENTOS ===================== -->
+    <section class="tela" data-tela="4" aria-labelledby="t4" hidden>
+      <header class="tela-head">
+        <span class="eyebrow">Etapa 4 · Carteira no Brasil</span>
+        <h2 id="t4" tabindex="-1">Seus investimentos</h2>
+        <p>Uma linha por aplicação. Os dados estão no extrato do BTG. Nesta versão: renda fixa.</p>
+      </header>
+
+      <div class="inv-acoes" style="margin-bottom:1rem">
+        <button class="btn btn--primary btn--sm" type="button" id="btnAddInv">+ Adicionar aplicação</button>
+        <button class="btn btn--ghost btn--sm" type="button" id="btnExemplo">Usar carteira de exemplo</button>
+        <span class="selo selo--ex" id="seloExemplo">Exemplo carregado</span>
+      </div>
+
+      <div class="stack" id="listaInv"></div>
+    </section>
+
+    <!-- ===================== 5. CENÁRIO ===================== -->
+    <section class="tela" data-tela="5" aria-labelledby="t5" hidden>
+      <header class="tela-head">
+        <span class="eyebrow">Etapa 5 · Premissas</span>
+        <h2 id="t5" tabindex="-1">Cenário</h2>
+        <p>CDI, IPCA e câmbio futuros são premissas, não fatos. Escolha um cenário ou digite o seu.</p>
+      </header>
+
+      <div class="opcoes opcoes--2">
+        <label class="opcao"><input type="radio" name="cen" value="mercado" checked><span class="marca"></span><span class="tag-en">PADRÃO</span><b>Mercado (Boletim Focus)</b><small>Mediana das projeções do Focus, Banco Central, coleta de 25/09/2026.</small></label>
+        <label class="opcao"><input type="radio" name="cen" value="pers"><span class="marca"></span><span class="tag-en">LIVRE</span><b>Personalizado</b><small>Você digita a trajetória ano a ano: Selic, IPCA e câmbio.</small></label>
+      </div>
+
+      <div class="bloco">
+        <div class="bloco-t">Trajetória anual <span class="selo selo--prem">Premissa de mercado</span></div>
+        <div class="tabela-wrap">
+          <table class="tabela traj" id="tabTraj">
+            <thead><tr><th>Indicador</th><th class="r">2026</th><th class="r">2027</th><th class="r">2028</th><th class="r">2029</th><th class="r">2030</th><th class="r">2031*</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="nota">Valores ilustrativos no protótipo. No simulador: Focus e SGS do Banco Central, com fonte e data. CDI derivado da Selic. * Além do horizonte do Focus: mantém o último valor projetado (premissa editável).</p>
+      </div>
+
+      <div class="bloco grid-2">
+        <div class="card field">
+          <label for="horiz" class="lbl">Horizonte da simulação</label>
+          <div class="range-row"><input type="range" id="horiz" min="1" max="15" value="6"><span class="range-val" id="horizVal">6 anos</span></div>
+          <p class="ajuda">De 1 a 15 anos.</p>
+        </div>
+        <div class="card field">
+          <span class="lbl">Moeda do resultado</span>
+          <div class="seg" role="group" aria-label="Moeda do resultado" style="align-self:flex-start;margin-top:.3rem">
+            <button type="button" data-moeda="USD" aria-pressed="true">USD</button><button type="button" data-moeda="BRL" aria-pressed="false">BRL</button>
+          </div>
+          <p class="ajuda" style="margin-top:.4rem">USD é o padrão, porque é a moeda em que você vive e declara. Dá para trocar também nos resultados.</p>
+        </div>
+      </div>
+
+      <div class="bloco card">
+        <div class="field">
+          <span class="lbl">Necessidade de liquidez</span>
+          <div class="grid-3">
+            <div class="iw"><span>R$</span><input value="400.000" aria-label="Valor necessário"></div>
+            <div class="iw"><span>Em</span><input value="03/2029" aria-label="Mês e ano"></div>
+            <button class="btn btn--ghost btn--sm" type="button">+ Outra data</button>
+          </div>
+          <p class="ajuda">Quanto você vai precisar resgatar e quando. As estratégias alternativas só valem se entregarem esse valor na data. Se o seu próprio plano não entregar, aparece um alerta.</p>
+        </div>
+      </div>
+
+      <div class="bloco">
+        <div class="bloco-t">Objetivo da comparação</div>
+        <div class="opcoes opcoes--3">
+          <label class="opcao"><input type="radio" name="obj" checked><span class="marca"></span><b>Maior patrimônio final</b><small>Em USD, depois de todos os impostos. Padrão.</small></label>
+          <label class="opcao"><input type="radio" name="obj"><span class="marca"></span><b>Menor carga total</b><small>Soma dos impostos no Brasil e nos EUA.</small></label>
+          <label class="opcao"><input type="radio" name="obj"><span class="marca"></span><b>Menor crédito perdido</b><small>Aproveitar ao máximo o IR brasileiro.</small></label>
+        </div>
+      </div>
+
+      <details class="avancado bloco">
+        <summary><i data-ico="ajuste"></i>Avançado <small>reinvestimento e faixas americanas futuras</small></summary>
+        <div class="avancado-corpo">
+          <div class="field">
+            <span class="lbl">Reinvestimento depois de um resgate <span class="selo selo--prem">espaço reservado</span></span>
+            <div style="border:1.5px dashed var(--bege-escuro);border-radius:var(--r);padding:1rem 1.1rem;background:var(--fundo)">
+              <p style="font-size:.92rem"><b>Opções de reinvestimento: em definição pela Sacre.</b></p>
+              <p class="ajuda" style="margin-top:.3rem">Enquanto isso, a premissa é: o valor resgatado, já líquido do IR no Brasil, é convertido em dólar na data do resgate e não rende até o fim do horizonte.</p>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field"><label for="infl">Corrigir as faixas americanas pela inflação dos EUA (% a.a.)</label><div class="iw"><input id="infl" placeholder="vazio = faixas nominais de 2026"><span>%</span></div></div>
+            <p class="ajuda" style="align-self:end">O IRS publica as faixas reais a cada ano. Sem correção, o simulador usa as de 2026 em todos os anos.</p>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- ===================== 6. RESULTADOS ===================== -->
+    <section class="tela" data-tela="6" aria-labelledby="t6" hidden>
+      <header class="tela-head" style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-end;flex-wrap:wrap">
+        <div>
+          <span class="eyebrow">Etapa 6 · Resultados da simulação</span>
+          <h2 id="t6" tabindex="-1">O que a simulação mostra</h2>
+        </div>
+        <div class="seg" role="group" aria-label="Moeda do resultado"><button type="button" data-moeda="USD" aria-pressed="true">USD</button><button type="button" data-moeda="BRL" aria-pressed="false">BRL</button></div>
+      </header>
+
+      <div class="callout callout--branco" style="margin-bottom:1rem">
+        <i data-ico="info"></i>
+        <div><h4>Protótipo: resultados ilustrativos</h4><p>Os números desta etapa são uma ilustração fixa, montada com a carteira de exemplo. Eles ainda não mudam com o que você digita. O cálculo real entra com os motores, na Etapa 2.</p></div>
+      </div>
+
+      <div class="pend-strip">
+        <span class="selo selo--pend"><i data-ico="alerta"></i>Pendente</span>
+        <button class="alt" type="button" aria-pressed="true" data-alt="a"><span class="ajuda">IR sobre cupons na Light · <b>prazo contado da compra</b></span><b data-usd="258660"></b></button>
+        <button class="alt" type="button" aria-pressed="false" data-alt="b"><span class="ajuda">IR sobre cupons na Light · <b>prazo contado do último cupom</b></span><b data-usd="257840"></b></button>
+        <span class="ajuda pend-nota">A regra ainda não foi confirmada e afeta o Tesouro IPCA+ com juros semestrais. Os dois resultados aparecem lado a lado; os gráficos seguem a interpretação que você marcar.</span>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Seções dos resultados">
+        <button class="tab" role="tab" aria-selected="true" aria-controls="p-painel" id="tb-painel">Painel</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="p-alt" id="tb-alt" tabindex="-1">Alternativas</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="p-estr" id="tb-estr" tabindex="-1">Estratégias</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="p-cred" id="tb-cred" tabindex="-1">Crédito</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="p-prod" id="tb-prod" tabindex="-1">Por produto</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="p-det" id="tb-det" tabindex="-1">Detalhamento</button>
+      </div>
+
+      <!-- Painel -->
+      <div role="tabpanel" id="p-painel" aria-labelledby="tb-painel" class="stack">
+        <p class="frase">Na simulação, a estratégia de <b>resgates parciais em 2029, 2030 e 2031</b> resultou em patrimônio final <b data-usd="10400"></b> maior que o seu plano, principalmente porque aproveitou o crédito que ficaria em saldo.</p>
+        <details class="avancado">
+          <summary><i data-ico="info"></i>O que é “seu plano”?</summary>
+          <div class="avancado-corpo">
+            <p style="font-size:.92rem">Seu plano usa as aplicações da etapa 4, com o <b>plano de resgate que você escolheu em cada uma</b>, no cenário da etapa 5. Onde você marcou “deixar o simulador sugerir”, o seu plano considera manter até o vencimento.</p>
+            <p style="font-size:.92rem">A <b>necessidade de liquidez</b> não muda o seu plano. Ela limita as estratégias alternativas: o simulador só compara estratégias que entregam aquele valor naquela data. Se o seu próprio plano não cobrir a necessidade, aparece um alerta.</p>
+          </div>
+        </details>
+        <div class="card">
+          <div class="bloco-t" style="margin-bottom:.2rem">Patrimônio líquido por ano, em <span data-sim>US$</span> mil</div>
+          <div class="legend"><span><i style="border-color:var(--verde)"></i>Resgates parciais 2029–2031</span><span><i style="border-color:var(--alerta);border-top-style:dashed"></i>Seu plano (etapa 4)</span><span><i style="border-color:var(--bege-escuro);border-top-style:dotted"></i>Resgate total em 2030</span></div>
+          <div class="chart" id="chPatrimonio"></div>
+        </div>
+        <div class="card">
+          <div class="bloco-t" style="margin-bottom:.2rem">De onde vem a diferença</div>
+          <p class="ajuda">Resgates parciais 2029–2031 frente ao seu plano.</p>
+          <div class="decomp" id="decomp"></div>
+        </div>
+      </div>
+
+      <!-- Alternativas -->
+      <div role="tabpanel" id="p-alt" aria-labelledby="tb-alt" hidden class="stack">
+        <div class="callout callout--branco">
+          <i data-ico="info"></i>
+          <div><h4>Simulação, não recomendação</h4><p>Mostra, na sua situação, a partir de que taxa cada alternativa empata com o que você tem, depois de todos os impostos. Considera só impostos: não considera risco de crédito, garantia do FGC, liquidez nem o seu perfil de investidor. Leve ao seu assessor antes de decidir.</p></div>
+        </div>
+        <p class="frase">Para quem mora nos EUA, o isento só rende mais que o produto com IR quando o crédito desse produto se perde, ou quando a alíquota brasileira passa da americana. Se todo o crédito for usado, a taxa de equilíbrio fica praticamente igual à do próprio produto com IR, porque nos EUA os dois pagam o mesmo imposto.</p>
+        <div>
+          <div class="bloco-t">A partir de que taxa um isento empata</div>
+          <div class="tabela-wrap">
+            <table class="tabela">
+              <thead><tr><th>Você tem</th><th class="r">Carga hoje<small>seu plano</small></th><th>Isento comparável</th><th class="r">Empata a partir de<small>seu plano</small></th><th class="r">Empata a partir de<small>crédito todo usado</small></th></tr></thead>
+              <tbody id="tbEquil"></tbody>
+            </table>
+          </div>
+          <p class="nota">Taxa de equilíbrio = taxa do produto com IR × (1 − carga dele) ÷ (1 − carga do isento). Em IPCA+, a conta usa o rendimento total projetado no cenário e volta para o formato IPCA + taxa. Acima da taxa de equilíbrio, o isento rende mais depois dos impostos; abaixo, rende menos.</p>
+        </div>
+        <div class="card">
+          <div class="bloco-t">Teste uma troca</div>
+          <div class="troca-grid">
+            <div class="field"><label for="trocaDe">Trocar</label><select class="input" id="trocaDe"><option value="cdb">CDB 102% do CDI</option><option value="tes">Tesouro IPCA+ 2035, juros semestrais</option></select></div>
+            <div class="field"><span class="lbl">Por</span><div class="troca-fixo" id="trocaPor">LCI ou LCA</div></div>
+            <div class="field"><label for="trocaTaxa">Taxa oferecida</label><div class="iw"><span id="trocaPre" hidden>IPCA +</span><input id="trocaTaxa" value="95" inputmode="decimal"><span id="trocaSuf">% do CDI</span></div></div>
+          </div>
+          <p class="ajuda" id="trocaEq" style="margin-top:.6rem"></p>
+          <div class="troca-res" id="trocaRes"></div>
+        </div>
+        <div>
+          <div class="bloco-t">Outras mudanças simuladas</div>
+          <div class="estrategias">
+            <article class="est"><span class="eyebrow" style="margin:0">Sem trocar de produto</span><h4>Mudar o plano de resgate</h4><p>Na simulação, resgatar em 2029, 2030 e 2031, em vez de tudo em 2031, aumentou o patrimônio final em <b data-usd="10400" data-sinal></b>. O crédito que ficaria em saldo passa a ser usado.</p></article>
+            <article class="est"><span class="eyebrow" style="margin:0">Estrutura do título</span><h4>Com cupom no lugar de sem cupom</h4><p>O IR brasileiro é retido a cada cupom e vira crédito no mesmo ano. Na simulação, o Tesouro IPCA+ com juros semestrais deixou <b data-usd="2100"></b> a menos em saldo que a versão sem juros.</p></article>
+            <article class="est"><span class="eyebrow" style="margin:0">Prazo</span><h4>Prazo de até 1 ano, renovado</h4><p>Sem OID anual: a renda e o IR caem no mesmo ano. Na Light, a alíquota de prazo curto precisa caber na sua alíquota média americana de 17,8%: 17,5% tende a caber; 20% e 22,5% não.</p></article>
+            <article class="est"><span class="eyebrow" style="margin:0">Renda isenta</span><h4>Isentos ampliam o teto</h4><p>A LCA e a debênture incentivada geram cerca de <b data-usd="7400" data-i="4"></b> por ano de renda estrangeira sem IR no Brasil. Isso abre perto de <b data-usd="1370" data-i="4"></b> por ano de espaço no teto para o crédito do CDB e do Tesouro.</p></article>
+          </div>
+        </div>
+      </div>
+
+      <!-- Estratégias -->
+      <div role="tabpanel" id="p-estr" aria-labelledby="tb-estr" hidden>
+        <div class="estrategias">
+          <article class="est">
+            <span class="eyebrow" style="margin:0">Seu plano</span>
+            <h4>Como você preencheu na etapa 4</h4>
+            <p class="plano">CDB e Tesouro: resgate total em 2031 · LCA e debênture: até o vencimento</p>
+            <div class="v" data-usd="258660" data-fmt="gt"></div>
+            <dl><dt>Carga efetiva</dt><dd>31,1%</dd><dt>Crédito em saldo</dt><dd><span data-usd="11038"></span> <span class="risco risco--alto">▲ Alto</span></dd><dt>Crédito perdido</dt><dd data-usd="0"></dd></dl>
+          </article>
+          <article class="est is-melhor">
+            <span class="eyebrow" style="margin:0;color:var(--verde)">Na simulação, maior patrimônio final</span>
+            <h4>Resgates parciais em 2029, 2030 e 2031</h4>
+            <p class="plano">CDB e Tesouro em três partes · respeita a liquidez de R$ 400 mil em 03/2029</p>
+            <div class="v"><span data-usd="269060" data-fmt="gt"></span><small class="dif-pos" data-usd="10400" data-sinal></small></div>
+            <dl><dt>Carga efetiva</dt><dd>23,4%</dd><dt>Crédito em saldo</dt><dd><span data-usd="310"></span> <span class="risco risco--baixo">● Baixo</span></dd><dt>Crédito perdido</dt><dd data-usd="0"></dd></dl>
+          </article>
+          <article class="est">
+            <span class="eyebrow" style="margin:0">Alternativa</span>
+            <h4>Resgate total em 2030</h4>
+            <p class="plano">CDB e Tesouro em 2030 · respeita a liquidez de R$ 400 mil em 03/2029</p>
+            <div class="v"><span data-usd="254600" data-fmt="gt"></span><small class="dif-neg" data-usd="-4060" data-sinal></small></div>
+            <dl><dt>Carga efetiva</dt><dd>32,6%</dd><dt>Crédito em saldo</dt><dd><span data-usd="12140"></span> <span class="risco risco--alto">▲ Alto</span></dd><dt>Crédito perdido</dt><dd data-usd="0"></dd></dl>
+          </article>
+          <article class="est">
+            <span class="eyebrow" style="margin:0">Troca de ativo</span>
+            <h4>CDB 102% do CDI × LCA</h4>
+            <p>Para render o mesmo que este CDB depois de todos os impostos, uma LCA precisaria pagar <b>82,0% do CDI</b> no seu plano, ou <b>102,0% do CDI</b> se todo o crédito for usado. Detalhes na aba Alternativas.</p>
+          </article>
+        </div>
+        <p class="nota">Também simuladas: manter até o vencimento; na Light, esperar a próxima faixa da tabela regressiva; título sem cupom por título com cupom; prazo longo por prazo de até 1 ano; reinvestir ou não; crédito ou dedução em cada ano. Linguagem sempre de simulação, nunca de recomendação.</p>
+      </div>
+
+      <!-- Crédito -->
+      <div role="tabpanel" id="p-cred" aria-labelledby="tb-cred" hidden class="stack">
+        <div class="card">
+          <div class="bloco-t" style="margin-bottom:.2rem">Linha do tempo do crédito, em <span data-sim>US$</span> mil</div>
+          <div class="legend"><span><i class="box" style="background:var(--verde-tint);border-color:var(--verde)"></i>Teto do ano</span><span><i class="box" style="background:var(--bege);border-color:var(--bege-escuro)"></i>IR retido no Brasil</span><span><i class="box" style="background:var(--verde);border-color:var(--verde)"></i>Crédito usado</span><span><i style="border-color:var(--alerta)"></i>Saldo no fim do ano</span></div>
+          <div class="chart" id="chCredito"></div>
+        </div>
+        <div class="callout"><i data-ico="alerta"></i><div><h4>Retificar a declaração de 2030 (Form 1040-X)</h4><p>Na simulação, <span data-usd="3922"></span> do IR retido em 2031 passam do teto e voltam para 2030, que tem espaço livre no teto.</p></div></div>
+        <div>
+          <div class="bloco-t">Controle do saldo <span class="ajuda" style="font-family:var(--sans)">no estilo do Schedule B do Form 1116</span></div>
+          <div class="tabela-wrap">
+            <table class="tabela">
+              <thead><tr><th>Ano de origem</th><th class="r">IR retido</th><th class="r">Usado no próprio ano</th><th class="r">Ano anterior</th><th class="r">Anos seguintes</th><th class="r">Expira em</th><th class="r">Saldo no fim de 2031</th></tr></thead>
+              <tbody id="tbSchedB"></tbody>
+              <tfoot id="tfSchedB"></tfoot>
+            </table>
+          </div>
+          <p class="nota" id="notaSchedB"></p>
+        </div>
+      </div>
+
+      <!-- Por produto -->
+      <div role="tabpanel" id="p-prod" aria-labelledby="tb-prod" hidden class="stack">
+        <div class="tabela-wrap">
+          <table class="tabela">
+            <thead><tr><th>Aplicação</th><th class="r">Carga efetiva<small>seu plano</small></th><th class="r">Carga efetiva<small>resgates parciais</small></th><th>Light × Full<small>no seu plano</small></th></tr></thead>
+            <tbody>
+              <tr><td><b>CDB 102% do CDI</b><small>IR Brasil 15% (acima de 720 dias)</small></td><td class="r">38,9%</td><td class="r">24,0%</td><td>Igual: 15% nas duas</td></tr>
+              <tr><td><b>LCA 95% do CDI</b><small>isenta no Brasil, tributada nos EUA</small></td><td class="r">24,0%</td><td class="r">24,0%</td><td>Igual: 0% nas duas</td></tr>
+              <tr><td><b>Tesouro IPCA+ 2035, juros semestrais</b><small>IR em cada cupom <span class="selo selo--pend">pendente</span></small></td><td class="r">33,2%</td><td class="r">24,1%</td><td>Full: 24,0% (0% no Brasil)</td></tr>
+              <tr><td><b>Debênture incentivada IPCA+ 6,8%</b><small>isenta no Brasil, tributada nos EUA</small></td><td class="r">24,0%</td><td class="r">24,0%</td><td>Igual: 0% nas duas</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="frase">Para render o mesmo que este CDB depois de todos os impostos, uma LCI precisaria pagar <b>82,0% do CDI</b>.</p>
+        <p class="nota">Carga efetiva = (IR Brasil + IR federal depois do crédito + NIIT + estadual) ÷ renda reconhecida nos EUA. Com o crédito usado por inteiro, a carga tende a max(alíquota no Brasil, alíquota nos EUA) + NIIT + estadual.</p>
+      </div>
+
+      <!-- Detalhamento -->
+      <div role="tabpanel" id="p-det" aria-labelledby="tb-det" hidden class="stack">
+        <div class="tabela-wrap">
+          <table class="tabela">
+            <thead><tr><th>Ano</th><th class="r">Juros e OID<small>fonte estrangeira</small></th><th class="r">Câmbio §988<small>fonte EUA</small></th><th class="r">IR retido<small>no Brasil</small></th><th class="r">Teto</th><th class="r">Crédito usado</th><th class="r">Federal<small>depois do crédito</small></th><th class="r">NIIT</th><th class="r">Estadual</th></tr></thead>
+            <tbody id="tbDet"></tbody>
+            <tfoot id="tfDet"></tfoot>
+          </table>
+        </div>
+        <p class="nota" id="notaDet"></p>
+        <div><button class="btn btn--ghost btn--sm" type="button" data-toast="csv">Baixar tabela (CSV)</button></div>
+      </div>
+    </section>
+
+    <!-- ===================== 7. ENTENDA O CÁLCULO ===================== -->
+    <section class="tela" data-tela="7" aria-labelledby="t7" hidden>
+      <header class="tela-head">
+        <span class="eyebrow">Etapa 7 · Transparência</span>
+        <h2 id="t7" tabindex="-1">Entenda o cálculo</h2>
+        <p>As regras usadas, de onde vêm, quando foram verificadas e o que ainda está pendente.</p>
+      </header>
+      <nav class="subnav" aria-label="Seções">
+        <a href="#e-aviso">Aviso</a><a href="#e-como">Como calculamos</a><a href="#e-isencao">Isenção brasileira</a><a href="#e-gloss">Glossário</a><a href="#e-regras">Regras e fontes</a><a href="#e-pend">Pendências</a>
+      </nav>
+      <div class="stack">
+        <div class="aviso-card" id="e-aviso">
+          <span class="pill-out">Aviso obrigatório</span>
+          <p><b>Aviso importante.</b> Esta calculadora não realiza cálculo tributário. É apenas um embasamento para a tomada de decisões financeiras no Brasil. Os resultados são simulações baseadas em regras públicas vigentes na data indicada e em premissas de mercado que podem não se confirmar. Não constituem declaração de imposto, parecer tributário ou recomendação de investimento, e não substituem a orientação de um contador habilitado nos EUA, de um tributarista no Brasil e do seu assessor de investimentos. A Sacre Investimentos, assessoria credenciada ao BTG Pactual, não armazena nenhuma informação digitada nesta página.</p>
+        </div>
+
+        <div class="card" id="e-como">
+          <div class="bloco-t">Por que o federal dá um bom norte</div>
+          <ul style="padding-left:1.1rem;display:flex;flex-direction:column;gap:.5rem;font-size:.95rem">
+            <li>O imposto estadual costuma alcançar os juros do Brasil e, em geral, <b>não dá crédito pelo IR pago no Brasil</b>. Ele soma à carga, por cima.</li>
+            <li>Como incide igual sobre os produtos brasileiros que geram juros (CDB, LCI, Tesouro), <b>a ordem de eficiência entre eles e a lógica de resgate tendem a não mudar</b>. O que muda é quanto sobra no final.</li>
+            <li>Onde o estado pode pesar é na <b>comparação com investimentos nos EUA</b>. Os juros de títulos do Tesouro americano são isentos de imposto estadual; os juros do Brasil, não. Em estados de alíquota alta, essa diferença precisa ser avaliada com o contador.</li>
+          </ul>
+        </div>
+
+        <div class="callout" id="e-isencao"><i data-ico="info"></i><div><h4>Por que a isenção brasileira não vale nos EUA</h4><p>Os EUA tributam o residente fiscal sobre a renda do mundo todo. A isenção de LCI, LCA, CRI, CRA e debêntures incentivadas é uma regra do Brasil e não muda a lei americana. Por isso esses juros entram na renda nos EUA e, sem IR no Brasil, não geram crédito, mas ampliam o teto.</p></div></div>
+
+        <div id="e-gloss">
+          <div class="bloco-t">Glossário</div>
+          <div class="glossario">
+            <div class="gl"><b>Foreign Tax Credit</b><p>Crédito pelo imposto de renda pago a outro país. Abate o IR federal americano sobre a mesma renda (IRC §901).</p></div>
+            <div class="gl"><b>Form 1116</b><p>Formulário da declaração americana em que a pessoa física calcula o crédito, por categoria de renda.</p></div>
+            <div class="gl"><b>Teto do crédito</b><p>Limite anual: o IR federal americano proporcional à renda estrangeira do ano (IRC §904).</p></div>
+            <div class="gl"><b>Saldo de crédito</b><p>O que passa do teto volta 1 ano (carryback, por declaração retificadora) e depois segue por até 10 anos (carryforward).</p></div>
+            <div class="gl"><b>OID</b><p>Original Issue Discount: juros embutidos em títulos que pagam tudo no vencimento. Nos EUA, entram na renda ano a ano.</p></div>
+            <div class="gl"><b>NIIT</b><p>Net Investment Income Tax: 3,8% sobre renda de investimentos acima de um limite de renda. O crédito estrangeiro não abate esse imposto.</p></div>
+            <div class="gl"><b>Renda de fonte estrangeira</b><p>Renda que a lei americana considera vinda de fora dos EUA, como juros de emissor brasileiro. Só ela forma o teto.</p></div>
+            <div class="gl"><b>Tabela regressiva</b><p>Alíquotas do IR brasileiro que caem com o prazo da aplicação: de 22,5% (até 180 dias) a 15% (acima de 720 dias).</p></div>
+            <div class="gl"><b>Deduções itemizadas</b><p>Alternativa à dedução padrão nos EUA: soma de despesas que a lei permite abater, como juros de hipoteca, impostos estaduais e doações (Schedule A).</p></div>
+            <div class="gl"><b>CNR</b><p>Conta de não residente: conta de investimento no Brasil de quem mora fora. Pode ser Light ou Full.</p></div>
+          </div>
+        </div>
+
+        <div id="e-regras">
+          <div class="bloco-t">Regras usadas <span class="selo selo--aprox">status ilustrativo no protótipo</span></div>
+          <div class="tabela-wrap">
+            <table class="tabela">
+              <thead><tr><th>Regra</th><th>Valor</th><th>Base legal</th><th>Verificada em</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Tabela regressiva (Light)</td><td>22,5% a 15%</td><td>Lei 11.033/2004, art. 1º</td><td>01/10/2026</td><td><span class="selo selo--ok">Confirmado</span></td></tr>
+                <tr><td>LCI, LCA, CRI e CRA (Light)</td><td>Isentos</td><td>Lei 11.033/2004, art. 3º</td><td>01/10/2026</td><td><span class="selo selo--ok">Confirmado</span></td></tr>
+                <tr><td>Debêntures incentivadas (Light)</td><td>Isentas</td><td>Lei 12.431/2011; confirmado pela Sacre com o BTG</td><td>01/10/2026</td><td><span class="selo selo--ok">Confirmado</span></td></tr>
+                <tr><td>Títulos públicos (Full)</td><td>0%</td><td>Lei 11.312/2006, art. 1º</td><td>01/10/2026</td><td><span class="selo selo--ok">Confirmado</span></td></tr>
+                <tr><td>IR sobre cupons (Light)</td><td>Prazo desde a compra?</td><td>Lei 11.033/2004</td><td>01/10/2026</td><td><span class="selo selo--pend">Pendente</span></td></tr>
+                <tr><td>Faixas federais de 2026</td><td>10% a 37%</td><td>Rev. Proc. 2025-32</td><td>01/10/2026</td><td><span class="selo selo--ok">Confirmado</span></td></tr>
+                <tr><td>Teto e saldo do crédito</td><td>1 ano atrás, 10 à frente</td><td>IRC §904(c); Reg. §1.904-2</td><td>01/10/2026</td><td><span class="selo selo--ok">Confirmado</span></td></tr>
+                <tr><td>CDI e IPCA+ nos EUA</td><td>Taxa variável / contingente</td><td>Reg. §1.1275-5, §1.1275-4, §1.988-6</td><td>01/10/2026</td><td><span class="selo selo--aprox">Aproximação</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="e-pend">
+          <div class="bloco-t">Pendências</div>
+          <ul class="pendencias">
+            <li><span class="selo selo--pend">Pendente</span><b>IR sobre cupons na Light</b>Momento e alíquota de cada cupom. Resultado mostrado nas duas interpretações.</li>
+            <li><span class="selo selo--pend">Pendente</span><b>IOF regressivo por regime</b>Resgates com menos de 30 dias.</li>
+            <li><span class="selo selo--aprox">Aproximação</span><b>Classificação americana dos títulos</b>CDI, IPCA+ e cupons indexados: classificação final pelo contador.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== PAINEL-RESUMO (DIREITA) ===================== -->
+  <aside class="resumo" aria-label="Resumo da simulação">
+
+    <div class="resumo-bloco" data-tela="2">
+      <div class="r-titulo"><h3>Seu perfil federal</h3><span class="ilustrativo">ilustrativo</span></div>
+      <div class="bn"><div class="bn-label">Alíquota média federal</div><div class="bn-valor tnum">17,8%</div><div class="bn-sub">US$ 21.398 sobre US$ 120.000 (faixas de 2026)</div></div>
+      <div class="bn"><div class="bn-label">Alíquota marginal</div><div class="bn-valor tnum">24%</div><div class="bn-sub">A próxima renda entra nesta faixa</div></div>
+      <div class="r-sec">
+        <h4>O IR do Brasil cabe no teto do ano?</h4>
+        <table class="r-tabela">
+          <tr><td>15% <span class="ajuda" style="color:var(--sobre-escuro-2)">CDB na Full; Light acima de 720 dias</span></td><td class="ok-txt">tende a caber</td></tr>
+          <tr><td>17,5% <span class="ajuda" style="color:var(--sobre-escuro-2)">Light, 361 a 720 dias</span></td><td class="ok-txt">tende a caber</td></tr>
+          <tr><td>20% <span class="ajuda" style="color:var(--sobre-escuro-2)">Light, 181 a 360 dias</span></td><td>gera saldo</td></tr>
+          <tr><td>22,5% <span class="ajuda" style="color:var(--sobre-escuro-2)">Light, até 180 dias</span></td><td>gera saldo</td></tr>
+        </table>
+      </div>
+      <div class="r-sec">
+        <h4>Estado</h4>
+        <div id="estadoSeloR"></div>
+      </div>
+      <div class="r-alerta"><i data-ico="info"></i><span><b>NIIT longe do limite.</b> Com os investimentos do Brasil, a renda ajustada estimada fica perto de US$ 161 mil. O limite para Single é US$ 200 mil.</span></div>
+    </div>
+
+    <div class="resumo-bloco" data-tela="3" hidden>
+      <div class="r-titulo"><h3>IR retido no Brasil até 2031</h3><span class="ilustrativo">ilustrativo</span></div>
+      <div class="bn"><div class="bn-label">CNR Light</div><div class="bn-valor tnum">R$ 114<small>mil</small></div><div class="bn-sub">CDB e Tesouro pela tabela regressiva; LCA e debênture incentivada isentas</div></div>
+      <div class="bn"><div class="bn-label">CNR Full</div><div class="bn-valor tnum">R$ 71<small>mil</small></div><div class="bn-sub">Só o CDB paga IR (15%); Tesouro, LCA e debênture incentivada com 0%</div></div>
+      <div class="r-alerta"><i data-ico="info"></i><span><b>Menos IR no Brasil não é menos imposto no total.</b> Nos EUA, a renda é tributada igual nas duas contas; o IR brasileiro só vira crédito até o teto.</span></div>
+    </div>
+
+    <div class="resumo-bloco" data-tela="4" hidden>
+      <div class="r-titulo"><h3>Sua carteira</h3><span class="ao-vivo">ao vivo</span></div>
+      <div class="bn"><div class="bn-label">Total aplicado</div><div class="bn-valor tnum" id="invTotal"></div><div class="bn-sub" id="invUsd"></div></div>
+      <div class="r-sec">
+        <h4>Como cada parte é tributada no Brasil</h4>
+        <table class="r-tabela" id="invTab"></table>
+      </div>
+      <div class="r-sec">
+        <h4>Alertas</h4>
+        <div id="invAlertas"></div>
+      </div>
+    </div>
+
+    <div class="resumo-bloco" data-tela="5" hidden>
+      <div class="r-titulo"><h3>Premissas de mercado</h3><span class="ilustrativo">ilustrativo</span></div>
+      <div class="bn"><div class="bn-label">Câmbio projetado, R$ por US$</div><div class="chart chart--escuro" id="chCambio" style="margin-top:.4rem"></div></div>
+      <div class="r-sec">
+        <h4>O que é premissa</h4>
+        <ul class="r-lista">
+          <li><i data-ico="info"></i><span>CDI = Selic menos a diferença média dos últimos 12 meses (SGS).</span></li>
+          <li><i data-ico="info"></i><span>Depois do último ano do Focus, o último valor fica constante.</span></li>
+          <li><i data-ico="info"></i><span>Faixas americanas nominais de 2026 em todos os anos.</span></li>
+          <li><i data-ico="info"></i><span>Venda antes do vencimento pela curva contratada, sem marcação a mercado.</span></li>
+        </ul>
+      </div>
+      <div class="r-alerta"><i data-ico="info"></i><span>Fonte: <b>Banco Central do Brasil</b>, Focus de 25/09/2026 e SGS. Você pode editar qualquer premissa.</span></div>
+    </div>
+
+    <div class="resumo-bloco" data-tela="6" hidden>
+      <div class="r-titulo"><h3>Seu plano · resultado</h3><span class="ilustrativo">ilustrativo</span></div>
+      <div class="bn"><div class="bn-label">Patrimônio final em 2031</div><button class="memo bn-valor tnum" data-memo="patrimonio" data-usd="258660" data-fmt="g"></button><div class="bn-sub" id="bnPatrSub"></div></div>
+      <div class="bn"><div class="bn-label">Carga efetiva total</div><button class="memo bn-valor tnum" data-memo="carga">31,1%</button><div class="bn-sub">da renda reconhecida nos EUA</div></div>
+      <div class="bn">
+        <div class="bn-label">Crédito do IR brasileiro, em <span data-sim>US$</span></div>
+        <div class="bn-sub" id="bnIrbr"></div>
+        <div class="bn-grid tnum">
+          <div><span>Usado no próprio ano</span><b><button class="memo" data-memo="credito" id="bnProprio"></button></b></div>
+          <div><span>Enviado ao ano anterior</span><b id="bnAnterior"></b></div>
+          <div><span>Em saldo</span><b id="bnSaldo"></b></div>
+          <div><span>Perdido</span><b>0</b></div>
+        </div>
+      </div>
+      <div class="bn"><div class="bn-label">Melhor estratégia na simulação</div><div class="bn-valor tnum" data-usd="10400" data-fmt="g" data-sinal></div><div class="bn-sub">Resgates parciais em 2029, 2030 e 2031</div></div>
+      <div id="estadoSeloR6" style="margin-top:.2rem"></div>
+      <div class="r-sec">
+        <h4>Alertas</h4>
+        <div class="r-alerta"><span class="risco risco--alto">▲ Alto</span><span><b>Saldo tende a se perder.</b> Sem renda estrangeira depois de 2031, os <span data-usd="11038"></span> em saldo expiram em 2041.</span></div>
+        <div class="r-alerta"><span class="risco risco--medio">◆ Médio</span><span><b>Retificar 2030.</b> Parte do crédito de 2031 volta para 2030 (Form 1040-X).</span></div>
+        <div class="r-alerta"><span class="selo selo--pend">Pendente</span><span>IR sobre cupons na Light (Tesouro IPCA+): duas interpretações.</span></div>
+        <div class="r-alerta"><span class="risco risco--medio">◆ Médio</span><span><b>3 aplicações compradas antes de 2026.</b> A simulação considera de 2026 em diante. Confirme com seu contador se os juros dos anos anteriores foram declarados e os impostos, pagos.</span></div>
+        <div class="r-alerta"><i data-ico="info"></i><span>Não considera AMT.</span></div>
+      </div>
+      <div class="r-botoes">
+        <button class="btn btn--bege" type="button" data-toast="pdf">Salvar resultado em PDF</button>
+        <button class="btn btn--claro" type="button" data-toast="csv">Baixar tabela (CSV)</button>
+      </div>
+    </div>
+
+    <div class="resumo-bloco" data-tela="7" hidden>
+      <div class="r-titulo"><h3>Sobre os dados</h3></div>
+      <div class="bn"><div class="bn-label">Parâmetros tributários</div><div class="bn-valor tnum" style="font-size:1.6rem">01/10/2026</div><div class="bn-sub">Última revisão da Sacre. Revisados ao menos 1 vez por ano e a cada mudança de lei.</div></div>
+      <div class="bn"><div class="bn-label">Dados de mercado</div><div class="bn-valor tnum" style="font-size:1.6rem">30/09/2026</div><div class="bn-sub">Banco Central (SGS e Focus), atualização automática diária. Se a rotina falhar, vale o último arquivo válido, com a data à vista.</div></div>
+      <div class="bn"><div class="bn-label">Pendências abertas</div><div class="bn-valor tnum" style="font-size:1.6rem">2 <small>+ 1 aproximação</small></div></div>
+      <div class="r-alerta"><i data-ico="cadeado"></i><span><b>Nada foi salvo.</b> Sem cookies, sem armazenamento no navegador, nada enviado a servidor.</span></div>
+    </div>
+  </aside>
+
+  <footer class="rodape">
+    <span>Simulação para embasamento de decisões financeiras. Não é cálculo tributário nem recomendação. Valide com seu contador e seu assessor.</span>
+    <button class="link" type="button" id="btnAviso">Leia o aviso completo</button>
+  </footer>
+</div>
+
+<!-- Aviso completo -->
+<dialog id="dlgAviso" aria-labelledby="dlgAvisoT">
+  <div class="dlg-head"><div><span class="eyebrow">Aviso obrigatório</span><h3 id="dlgAvisoT">Aviso completo</h3></div><button class="dlg-x" type="button" data-close aria-label="Fechar">✕</button></div>
+  <div class="dlg-body"><p style="line-height:1.6"><b>Aviso importante.</b> Esta calculadora não realiza cálculo tributário. É apenas um embasamento para a tomada de decisões financeiras no Brasil. Os resultados são simulações baseadas em regras públicas vigentes na data indicada e em premissas de mercado que podem não se confirmar. Não constituem declaração de imposto, parecer tributário ou recomendação de investimento, e não substituem a orientação de um contador habilitado nos EUA, de um tributarista no Brasil e do seu assessor de investimentos. A Sacre Investimentos, assessoria credenciada ao BTG Pactual, não armazena nenhuma informação digitada nesta página.</p></div>
+</dialog>
+
+<!-- Memória de cálculo -->
+<dialog id="dlgMemo" aria-labelledby="dlgMemoT">
+  <div class="dlg-head"><div><span class="eyebrow">Memória de cálculo</span><h3 id="dlgMemoT"></h3></div><button class="dlg-x" type="button" data-close aria-label="Fechar">✕</button></div>
+  <div class="dlg-body" id="dlgMemoBody"></div>
+</dialog>
+
+<!-- Recomeçar -->
+<dialog id="dlgRecomecar" aria-labelledby="dlgRecT" style="width:min(28rem,calc(100vw - 2rem))">
+  <div class="dlg-head"><h3 id="dlgRecT">Recomeçar a simulação?</h3><button class="dlg-x" type="button" data-close aria-label="Fechar">✕</button></div>
+  <div class="dlg-body"><p>Tudo o que você digitou será apagado desta página.</p><div style="display:flex;gap:.6rem;justify-content:flex-end;margin-top:1.2rem"><button class="btn btn--ghost" type="button" data-close>Cancelar</button><button class="btn btn--primary" type="button" id="btnRecOk">Recomeçar</button></div></div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+  /* ---------- formatação ---------- */
+  const fmt0 = v => v.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+  const fmt1 = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const fmt2 = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmtAte1 = v => v.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+  const parseNum = s => { const n = parseFloat(String(s || '').replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, '')); return isFinite(n) ? n : 0; };
+  const plural = (n, s, p) => `${n} ${n > 1 ? p : s}`;
+  const fmtReais = v => v >= 1e6 ? `R$ ${fmt2(v / 1e6)} mi` : v >= 1e3 ? `R$ ${fmtAte1(v / 1e3)} mil` : `R$ ${fmt0(v)}`;
+
+  /* ---------- ícones ---------- */
+  const ICO = {
+    info: '<circle cx="10" cy="10" r="8.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 9v5M10 6.1v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+    alerta: '<path d="M10 2.8 18.2 16.6H1.8z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 8v4.2M10 14.4v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+    check: '<path d="M4 10.5 8 14.5 16 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+    cadeado: '<rect x="4" y="9" width="12" height="8.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9" fill="none" stroke="currentColor" stroke-width="1.5"/>',
+    seta: '<path d="M4 10h11M11 5.5 15.5 10 11 14.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+    ajuste: '<path d="M3 6h9M15 6h2M3 14h2M8 14h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="13.5" cy="6" r="1.8" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="6.5" cy="14" r="1.8" fill="none" stroke="currentColor" stroke-width="1.5"/>'
+  };
+  const icone = n => `<svg class="ico" viewBox="0 0 20 20" aria-hidden="true">${ICO[n]}</svg>`;
+  const pintaIcones = (raiz = document) => $$('i[data-ico]', raiz).forEach(i => { i.outerHTML = icone(i.dataset.ico); });
+
+  /* ---------- modo "ver em" (só no protótipo) ---------- */
+  const qs = new URLSearchParams(location.search);
+  const embutido = qs.has('embed');
+  if (embutido || window.self !== window.top) {
+    $('#viewerCtl').outerHTML = '<span class="selo selo--proto" style="cursor:default">Protótipo · valores ilustrativos</span>';
+  } else {
+    const bp = $('#btnProto'), mn = $('#viewerMenu');
+    const abre = on => { mn.hidden = !on; bp.setAttribute('aria-expanded', on); };
+    bp.addEventListener('click', e => { e.stopPropagation(); abre(mn.hidden); });
+    document.addEventListener('click', e => { if (!e.target.closest('#viewerCtl')) abre(false); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') abre(false); });
+  }
+
+  /* ---------- navegação por etapas ---------- */
+  const NOMES = ['Boas-vindas', 'Onde você mora', 'Sua conta no Brasil', 'Seus investimentos', 'Cenário', 'Resultados', 'Entenda o cálculo'];
+  let etapa = 1, liberado = false;
+
+  function irPara(n, foco = true) {
+    if (!liberado && n > 1) return;
+    etapa = n;
+    $$('.tela').forEach(t => t.hidden = +t.dataset.tela !== n);
+    $$('.resumo-bloco').forEach(b => b.hidden = +b.dataset.tela !== n);
+    $('#app').classList.toggle('is-welcome', n === 1);
+    $$('.step').forEach(s => {
+      const k = +s.dataset.step;
+      s.classList.toggle('is-current', k === n);
+      s.classList.toggle('is-done', liberado && k < n);
+      s.disabled = !liberado && k > 1;
+      if (k === n) s.setAttribute('aria-current', 'step'); else s.removeAttribute('aria-current');
+    });
+    $('#etapaAtual').innerHTML = `Etapa <b>${n} de 7</b> · ${NOMES[n - 1]}`;
+    $('#progressBar').style.width = (n / 7 * 100) + '%';
+    $('#progressTxt').textContent = `Etapa ${n} de 7`;
+    $('#main').scrollTop = 0;
+    $('.resumo').scrollTop = 0;
+    if (foco) { const h = $(`.tela[data-tela="${n}"] h1, .tela[data-tela="${n}"] h2`); h && h.focus({ preventScroll: true }); }
+  }
+  $$('.step').forEach(s => s.addEventListener('click', () => irPara(+s.dataset.step)));
+  $('#btnEntendi').addEventListener('click', () => { liberado = true; irPara(2); });
+
+  /* ---------- diálogos e avisos ---------- */
+  $$('dialog').forEach(d => d.addEventListener('click', e => { if (e.target === d || e.target.closest('[data-close]')) d.close(); }));
+  $('#btnAviso').addEventListener('click', () => $('#dlgAviso').showModal());
+  $('#btnRecomecar').addEventListener('click', () => $('#dlgRecomecar').showModal());
+  $('#btnRecOk').addEventListener('click', () => { $('#dlgRecomecar').close(); liberado = false; irPara(1); });
+
+  const toast = msg => { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 3800); };
+  const TOASTS = {
+    pdf: 'No produto final: abre a impressão do navegador, com folha A4 no padrão Sacre e o aviso completo. Nada sai do seu computador.',
+    csv: 'No produto final: baixa o CSV gerado no próprio navegador, sem enviar nada a servidor.',
+    avancadoInv: 'No produto final: abre os campos de data de emissão, valor atual do extrato e taxa de venda (marcação a mercado).'
+  };
+  document.addEventListener('click', e => { const b = e.target.closest('[data-toast]'); if (b) toast(TOASTS[b.dataset.toast]); });
+
+  /* ---------- etapa 2: estado ---------- */
+  const ESTADOS = [['AL','Alabama'],['AK','Alasca'],['AZ','Arizona'],['AR','Arkansas'],['CA','Califórnia'],['NC','Carolina do Norte'],['SC','Carolina do Sul'],['CO','Colorado'],['CT','Connecticut'],['ND','Dakota do Norte'],['SD','Dakota do Sul'],['DE','Delaware'],['DC','Distrito de Colúmbia'],['FL','Flórida'],['GA','Geórgia'],['HI','Havaí'],['ID','Idaho'],['IL','Illinois'],['IN','Indiana'],['IA','Iowa'],['KS','Kansas'],['KY','Kentucky'],['LA','Louisiana'],['ME','Maine'],['MD','Maryland'],['MA','Massachusetts'],['MI','Michigan'],['MN','Minnesota'],['MS','Mississippi'],['MO','Missouri'],['MT','Montana'],['NE','Nebraska'],['NV','Nevada'],['NH','New Hampshire'],['NJ','Nova Jersey'],['NM','Novo México'],['NY','Nova York'],['OH','Ohio'],['OK','Oklahoma'],['OR','Oregon'],['PA','Pensilvânia'],['RI','Rhode Island'],['TN','Tennessee'],['TX','Texas'],['UT','Utah'],['VT','Vermont'],['VA','Virgínia'],['WV','Virgínia Ocidental'],['WA','Washington'],['WI','Wisconsin'],['WY','Wyoming']];
+  const MODO_A = new Set(['FL','TX','NV','WY','SD','AK','TN','NH','WA']);
+  const sel = $('#selEstado');
+  const opt = ([uf, nome]) => `<option value="${uf}"${uf === 'FL' ? ' selected' : ''}>${nome}</option>`;
+  sel.innerHTML =
+    `<optgroup label="Estados incluídos: sem imposto estadual sobre juros e dividendos">${ESTADOS.filter(e => MODO_A.has(e[0])).map(opt).join('')}</optgroup>` +
+    `<optgroup label="Demais estados: federal, com alerta">${ESTADOS.filter(e => !MODO_A.has(e[0])).map(opt).join('')}</optgroup>`;
+
+  function atualizaEstado() {
+    const uf = sel.value, nome = ESTADOS.find(e => e[0] === uf)[1];
+    const a = MODO_A.has(uf), aliq = $('#aliqEst').value.trim();
+    $('#modoB').hidden = a;
+    let selo;
+    if (a) selo = `<span class="selo selo--estado">${icone('check')} Estado incluído: sem imposto estadual sobre estes rendimentos</span>` +
+      (uf === 'WA' ? `<p class="ajuda" style="margin-top:.4rem">Washington tem imposto estadual sobre ganho de capital de longo prazo. Na renda fixa, estadual = 0; atenção quando houver ganho de capital.</p>` : '');
+    else if (aliq) selo = `<span class="selo selo--estado">${icone('alerta')} Estadual estimado pelo usuário: ${aliq}%</span>`;
+    else selo = `<span class="selo selo--estado">${icone('alerta')} Imposto estadual não incluído</span>`;
+    $('#estadoSelo').innerHTML = selo;
+    const r = `<span class="selo selo--estado">${a ? icone('check') + ' Estado incluído' : icone('alerta') + (aliq ? ' Estadual estimado pelo usuário' : ' Imposto estadual não incluído')} · ${nome}</span>`;
+    $('#estadoSeloR').innerHTML = r; $('#estadoSeloR6').innerHTML = r;
+  }
+  sel.addEventListener('change', atualizaEstado);
+  $('#aliqEst').addEventListener('input', atualizaEstado);
+  atualizaEstado();
+
+  $('#btnNaoRes').addEventListener('click', () => { $('#naoRes').hidden = !$('#naoRes').hidden; });
+  $('#btnNaoSei').addEventListener('click', () => { $('#naoSei').hidden = !$('#naoSei').hidden; });
+
+  $$('[data-renda]').forEach(b => b.addEventListener('click', () => {
+    $$('[data-renda]').forEach(x => x.setAttribute('aria-pressed', x === b));
+    $('#rendaExata').hidden = b.dataset.renda !== 'exata';
+    $('#rendaFaixa').hidden = b.dataset.renda !== 'faixa';
+  }));
+  $$('.seg').forEach(g => {
+    if (g.querySelector('[data-renda],[data-moeda]')) return;
+    $$('button', g).forEach(b => b.addEventListener('click', () => $$('button', g).forEach(x => x.setAttribute('aria-pressed', x === b))));
+  });
+
+  /* ---------- etapa 4: investimentos ---------- */
+  const IDX = {
+    pre: { nome: 'Prefixado', pre: '', suf: '% a.a.', ph: '13,00' },
+    cdi: { nome: '% do CDI', pre: '', suf: '% do CDI', ph: '102' },
+    cdimais: { nome: 'CDI + taxa', pre: 'CDI +', suf: '% a.a.', ph: '1,20' },
+    ipca: { nome: 'IPCA + taxa', pre: 'IPCA +', suf: '% a.a.', ph: '6,50' },
+    selic: { nome: 'Selic + taxa', pre: 'Selic +', suf: '% a.a.', ph: '0,05' }
+  };
+  // tipo: define o IR no Brasil. pag: pagamento fixado pelo título (Tesouro).
+  const PROD = {
+    'Tesouro Selic': { idx: ['selic'], pag: 'Só no vencimento', tipo: 'tesouro' },
+    'Tesouro Prefixado': { idx: ['pre'], pag: 'Só no vencimento', tipo: 'tesouro' },
+    'Tesouro Prefixado com juros semestrais': { idx: ['pre'], pag: 'Cupons semestrais', tipo: 'tesouro' },
+    'Tesouro IPCA+': { idx: ['ipca'], pag: 'Só no vencimento', tipo: 'tesouro' },
+    'Tesouro IPCA+ com juros semestrais': { idx: ['ipca'], pag: 'Cupons semestrais', tipo: 'tesouro' },
+    'CDB pré': { idx: ['pre'], tipo: 'cdb' },
+    'CDB % do CDI': { idx: ['cdi'], tipo: 'cdb' },
+    'CDB IPCA+': { idx: ['ipca'], tipo: 'cdb' },
+    'LCI': { idx: ['cdi', 'pre', 'ipca'], tipo: 'isento' },
+    'LCA': { idx: ['cdi', 'pre', 'ipca'], tipo: 'isento' },
+    'CRI': { idx: ['ipca', 'cdimais', 'cdi', 'pre'], tipo: 'isento' },
+    'CRA': { idx: ['ipca', 'cdimais', 'cdi', 'pre'], tipo: 'isento' },
+    'Debênture comum': { idx: ['ipca', 'cdimais', 'cdi', 'pre'], tipo: 'deb' },
+    'Debênture incentivada': { idx: ['ipca', 'cdimais', 'pre'], tipo: 'isento' }
+  };
+  const tratamento = (tipo, c) => c === 'light'
+    ? (tipo === 'isento' ? 'isento' : 'regressiva')
+    : (tipo === 'cdb' || tipo === 'deb' ? 'quinze' : 'zero');
+  const PAGS = ['Só no vencimento', 'Cupons semestrais', 'Cupons anuais', 'Cupons mensais'];
+  const LIQS = ['Diária', 'Com carência', 'Só no vencimento'];
+  const EXEMPLO = [
+    { p: 'CDB % do CDI', v: '500.000', c: '17/03/2025', ven: '17/03/2031', idx: 'cdi', taxa: '102', pag: 'Só no vencimento', liq: 'Diária', plano: 'Total em 2031' },
+    { p: 'LCA', v: '300.000', c: '12/01/2026', ven: '12/01/2028', idx: 'cdi', taxa: '95', pag: 'Só no vencimento', liq: 'Só no vencimento', plano: 'Manter até o vencimento' },
+    { p: 'Tesouro IPCA+ com juros semestrais', v: '200.000', c: '05/08/2024', ven: '15/05/2035', idx: 'ipca', taxa: '7,20', pag: 'Cupons semestrais', liq: 'Diária', plano: 'Total em 2031' },
+    { p: 'Debênture incentivada', v: '150.000', c: '20/06/2025', ven: '15/06/2032', idx: 'ipca', taxa: '6,80', pag: 'Cupons semestrais', liq: 'Só no vencimento', plano: 'Deixar o simulador sugerir' }
+  ];
+  let carteira = EXEMPLO.map(d => ({ ...d }));
+  let exemplo = true;
+  const contaAtual = () => ($('input[name="conta"]:checked') || {}).value || 'light';
+  const contasAtivas = () => contaAtual() === 'ambas' ? ['light', 'full'] : [contaAtual()];
+  const parseData = s => {
+    const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec((s || '').trim()); if (!m) return null;
+    const d = new Date(+m[3], +m[2] - 1, +m[1]);
+    return d.getDate() === +m[1] && d.getMonth() === +m[2] - 1 ? d : null;
+  };
+  const diasEntre = d => { const c = parseData(d.c), v = parseData(d.ven); return c && v && v > c ? Math.round((v - c) / 864e5) : null; };
+  const regressiva = dias => dias <= 180 ? 22.5 : dias <= 360 ? 20 : dias <= 720 ? 17.5 : 15;
+  const mesAno = d => String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
+  const optsTxt = (lista, atual) => lista.map(o => `<option${o === atual ? ' selected' : ''}>${o}</option>`).join('');
+  function planos(d) {
+    const v = parseData(d.ven), ate = v ? Math.min(v.getFullYear(), 2040) : 2031, anos = [];
+    for (let a = 2026; a <= ate; a++) anos.push('Total em ' + a);
+    return ['Manter até o vencimento', ...anos, 'Parcial (definir datas)', 'Deixar o simulador sugerir'];
+  }
+
+  function tagsFor(d) {
+    const P = PROD[d.p], dias = diasEntre(d), cupom = d.pag !== 'Só no vencimento', t = [];
+    const contas = contasAtivas();
+    contas.forEach(k => {
+      const tr = tratamento(P.tipo, k), nm = k === 'light' ? 'Light' : 'Full';
+      if (tr === 'regressiva') {
+        if (dias == null) t.push(`<span class="tag">${nm}: tabela regressiva, 22,5% a 15%</span>`);
+        else if (dias > 720) t.push(`<span class="tag">${nm}: tabela regressiva, 15% a partir de ${mesAno(new Date(parseData(d.c).getTime() + 721 * 864e5))}</span>`);
+        else t.push(`<span class="tag">${nm}: ${fmtAte1(regressiva(dias))}% no vencimento (${dias} dias)</span>`);
+        if (cupom) t.push('<span class="selo selo--pend">IR do cupom: pendente</span>');
+      } else t.push(`<span class="tag">${nm}: ${tr === 'quinze' ? '15%' : tr === 'zero' ? '0%' : 'isento'}</span>`);
+    });
+    const temIR = contas.some(k => ['regressiva', 'quinze'].includes(tratamento(P.tipo, k)));
+    if (dias != null) {
+      if (dias <= 365) t.push('<span class="tag">EUA: renda no resgate (emissão até 1 ano)</span>');
+      else if (cupom) t.push('<span class="tag">EUA: juros todo ano; cupons no ano do pagamento</span>');
+      else t.push(`<span class="tag">EUA: OID todo ano${temIR ? ' · IR do Brasil só no resgate' : ''}</span>`);
+    }
+    if (!temIR) t.push('<span class="tag">Amplia o teto</span>');
+    const compra = parseData(d.c);
+    if (compra && compra < new Date(2026, 0, 1)) t.push('<span class="selo selo--falta">Comprada antes de 2026</span>');
+    if (dias != null) t.push('<span class="selo selo--aprox">Emissão = compra</span>');
+    else t.push('<span class="selo selo--falta">Falta data</span>');
+    if (['cdi', 'cdimais', 'selic'].includes(d.idx)) t.push('<span class="selo selo--aprox">Taxa variável: aproximação</span>');
+    if (d.idx === 'ipca') t.push('<span class="selo selo--aprox">IPCA+: aproximação</span>');
+    return t.join('');
+  }
+
+  function cardInv(d, i) {
+    const P = PROD[d.p], I = IDX[d.idx], n = String(i + 1).padStart(2, '0');
+    const selIdx = P.idx.length > 1
+      ? `<select class="input" id="ix${i}" data-k="idx" aria-label="Indexador da aplicação ${n}">${P.idx.map(k => `<option value="${k}"${k === d.idx ? ' selected' : ''}>${IDX[k].nome}</option>`).join('')}</select>`
+      : '';
+    return `
+    <article class="inv" data-i="${i}" aria-label="Aplicação ${n}">
+      <div class="inv-cab"><span class="n">Aplicação ${n}</span><button class="x" type="button" aria-label="Remover aplicação ${n}">✕</button></div>
+      <div class="inv-l1">
+        <div class="field"><label for="p${i}">Produto</label><select class="input" id="p${i}" data-k="p">${optsTxt(Object.keys(PROD), d.p)}</select></div>
+        <div class="field"><label for="v${i}">Valor aplicado</label><div class="iw"><span>R$</span><input id="v${i}" data-k="v" value="${d.v}" inputmode="numeric" placeholder="0"></div></div>
+        <div class="field"><label for="c${i}">Compra</label><input class="input tnum" id="c${i}" data-k="c" value="${d.c}" placeholder="dd/mm/aaaa"></div>
+        <div class="field"><label for="ve${i}">Vencimento</label><input class="input tnum" id="ve${i}" data-k="ven" value="${d.ven}" placeholder="dd/mm/aaaa"></div>
+      </div>
+      <div class="inv-l2">
+        <div class="field"><label for="tx${i}">Remuneração</label><div class="rem">${selIdx}<div class="iw">${I.pre && !selIdx ? `<span>${I.pre}</span>` : ''}<input id="tx${i}" data-k="taxa" value="${d.taxa}" placeholder="${I.ph}" inputmode="decimal"><span>${I.suf}</span></div></div></div>
+        <div class="field"><label for="pg${i}">Pagamento</label><select class="input" id="pg${i}" data-k="pag"${P.pag ? ' disabled title="Definido pelo título"' : ''}>${optsTxt(PAGS, d.pag)}</select></div>
+        <div class="field"><label for="l${i}">Liquidez</label><select class="input" id="l${i}" data-k="liq">${optsTxt(LIQS, d.liq)}</select></div>
+      </div>
+      <div class="inv-l3">
+        <div class="field"><label for="pl${i}">Plano de resgate</label><select class="input" id="pl${i}" data-k="plano">${optsTxt(planos(d), d.plano)}</select></div>
+        <button class="link" type="button" data-toast="avancadoInv">Avançado: emissão, valor do extrato, taxa de venda</button>
+      </div>
+      <div class="inv-tags">${tagsFor(d)}</div>
+    </article>`;
+  }
+
+  const lista = $('#listaInv');
+  function desenhaCarteira() {
+    carteira.forEach(d => { if (!planos(d).includes(d.plano)) d.plano = 'Manter até o vencimento'; });
+    lista.innerHTML = (carteira.length
+      ? carteira.map(cardInv).join('')
+      : '<div class="card" style="text-align:center;color:var(--texto-2)">Nenhuma aplicação. Use <b>+ Adicionar aplicação</b> ou a carteira de exemplo.</div>')
+      + '<p class="nota">Fase 2: previdência privada, ações, FIIs e imóveis.</p>';
+    painelCarteira();
+  }
+  const marcaEditado = () => { if (exemplo) { exemplo = false; $('#seloExemplo').hidden = true; } };
+
+  function aoMudar(e) {
+    const el = e.target.closest('[data-k]'); if (!el) return;
+    const card = el.closest('.inv'), i = +card.dataset.i, d = carteira[i], k = el.dataset.k;
+    d[k] = el.value; marcaEditado();
+    if (e.type === 'change' && k === 'p') {
+      const P = PROD[d.p];
+      if (!P.idx.includes(d.idx)) { d.idx = P.idx[0]; d.taxa = ''; }
+      if (P.pag) d.pag = P.pag;
+      if (P.tipo === 'tesouro') d.liq = 'Diária';
+      card.outerHTML = cardInv(d, i); $('#p' + i).focus(); painelCarteira(); return;
+    }
+    if (e.type === 'change' && k === 'idx') { d.taxa = ''; card.outerHTML = cardInv(d, i); $('#ix' + i).focus(); painelCarteira(); return; }
+    if (e.type === 'change' && k === 'ven') {
+      if (!planos(d).includes(d.plano)) d.plano = 'Manter até o vencimento';
+      $('#pl' + i).innerHTML = optsTxt(planos(d), d.plano);
+    }
+    $('.inv-tags', card).innerHTML = tagsFor(d);
+    painelCarteira();
+  }
+  lista.addEventListener('input', aoMudar);
+  lista.addEventListener('change', aoMudar);
+  lista.addEventListener('focusout', e => {
+    const el = e.target;
+    if (el.dataset && el.dataset.k === 'v' && el.value.trim()) {
+      const n = parseNum(el.value); el.value = n ? fmt0(n) : '';
+      carteira[+el.closest('.inv').dataset.i].v = el.value;
+    }
+  });
+  lista.addEventListener('click', e => {
+    const x = e.target.closest('.x'); if (!x) return;
+    carteira.splice(+x.closest('.inv').dataset.i, 1); marcaEditado(); desenhaCarteira(); toast('Aplicação removida.');
+  });
+  $('#btnAddInv').addEventListener('click', () => {
+    carteira.push({ p: 'CDB % do CDI', v: '', c: '', ven: '', idx: 'cdi', taxa: '', pag: 'Só no vencimento', liq: 'Diária', plano: 'Manter até o vencimento' });
+    marcaEditado(); desenhaCarteira();
+    const ult = $('#p' + (carteira.length - 1));
+    ult.scrollIntoView({ block: 'center', behavior: 'smooth' }); ult.focus({ preventScroll: true });
+  });
+  $('#btnExemplo').addEventListener('click', () => {
+    carteira = EXEMPLO.map(d => ({ ...d })); exemplo = true; $('#seloExemplo').hidden = false; desenhaCarteira(); toast('Carteira de exemplo carregada.');
+  });
+  $$('input[name="conta"]').forEach(r => r.addEventListener('change', () => {
+    $$('.inv', lista).forEach(card => { $('.inv-tags', card).innerHTML = tagsFor(carteira[+card.dataset.i]); });
+    painelCarteira();
+  }));
+
+  const CAMBIO_HOJE = 5.40;
+  function painelCarteira() {
+    const total = carteira.reduce((s, d) => s + parseNum(d.v), 0);
+    $('#invTotal').innerHTML = !total ? 'R$ 0' : total >= 1e6 ? `R$ ${fmt2(total / 1e6)}<small>mi</small>` : total >= 1e3 ? `R$ ${fmtAte1(total / 1e3)}<small>mil</small>` : `R$ ${fmt0(total)}`;
+    $('#invUsd').textContent = total ? `≈ US$ ${fmtAte1(total / CAMBIO_HOJE / 1e3)} mil pelo câmbio de hoje (R$ 5,40, ilustrativo) · ${plural(carteira.length, 'aplicação', 'aplicações')}` : 'Informe o valor de cada aplicação';
+    const contas = contasAtivas();
+    const ROT = { regressiva: 'Com IR pela tabela regressiva', quinze: 'Com IR de 15%', zero: '0% no Brasil', isento: 'Isento no Brasil' };
+    let html = '';
+    contas.forEach(c => {
+      const soma = {};
+      carteira.forEach(d => { const t = tratamento(PROD[d.p].tipo, c); soma[t] = (soma[t] || 0) + parseNum(d.v); });
+      if (contas.length > 1) html += `<tr><td colspan="2" style="color:var(--bege);font-weight:700;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;padding-top:.7rem">CNR ${c === 'light' ? 'Light' : 'Full'}</td></tr>`;
+      Object.entries(soma).forEach(([t, v]) => html += `<tr><td>${ROT[t]}</td><td class="ok-txt">${fmtReais(v)}</td></tr>`);
+    });
+    $('#invTab').innerHTML = html || '<tr><td>Nenhuma aplicação</td><td></td></tr>';
+
+    const al = [], n = carteira.length, apl = k => plural(k, 'aplicação', 'aplicações');
+    if (!n) al.push(['alerta', '<b>Nenhuma aplicação.</b> Inclua ao menos uma para simular.']);
+    const semValor = carteira.filter(d => !parseNum(d.v)).length;
+    if (semValor) al.push(['alerta', `<b>Dado faltando:</b> valor aplicado em ${apl(semValor)}.`]);
+    const semData = carteira.filter(d => diasEntre(d) == null).length;
+    if (semData) al.push(['alerta', `<b>Dado faltando:</b> data de compra ou de vencimento em ${apl(semData)}.`]);
+    const semTaxa = carteira.filter(d => d.idx !== 'selic' && !parseNum(d.taxa)).length;
+    if (semTaxa) al.push(['alerta', `<b>Dado faltando:</b> taxa em ${apl(semTaxa)}.`]);
+    const antigas = carteira.filter(d => { const c = parseData(d.c); return c && c < new Date(2026, 0, 1); }).length;
+    if (antigas) al.push(['alerta', `<b>Comprada antes de 2026</b> em ${apl(antigas)}: a simulação considera de 2026 em diante. Confirme com seu contador se os juros dos anos anteriores foram declarados nos EUA e se os impostos foram pagos.`]);
+    const light = contas.includes('light');
+    const cupomPend = light ? carteira.filter(d => tratamento(PROD[d.p].tipo, 'light') === 'regressiva' && d.pag !== 'Só no vencimento').length : 0;
+    if (cupomPend) al.push(['pend', `<b>IR sobre cupons na Light</b> em ${apl(cupomPend)}: o resultado sai nas duas interpretações.`]);
+    const curtos = light ? carteira.filter(d => { const dd = diasEntre(d); return tratamento(PROD[d.p].tipo, 'light') === 'regressiva' && dd != null && dd <= 720; }).length : 0;
+    if (curtos) al.push(['alerta', `<b>Prazo curto na Light</b> em ${apl(curtos)}: alíquota acima de 15% exige alíquota média americana maior para caber no teto.`]);
+    const semIR = carteira.filter(d => contas.some(c => ['isento', 'zero'].includes(tratamento(PROD[d.p].tipo, c)))).length;
+    if (semIR) al.push(['info', `<b>Sem IR no Brasil</b> em ${apl(semIR)}: a renda é tributada nos EUA e amplia o teto do crédito.`]);
+    const aprox = carteira.filter(d => diasEntre(d) != null).length;
+    if (aprox) al.push(['info', `<b>Aproximação:</b> data de emissão igual à de compra em ${apl(aprox)}. Informe a emissão no avançado.`]);
+    $('#invAlertas').innerHTML = al.map(([t, x]) => `<div class="r-alerta">${t === 'pend' ? '<span class="selo selo--pend">Pendente</span>' : icone(t)}<span>${x}</span></div>`).join('');
+  }
+
+  /* ---------- etapa 5: cenário ---------- */
+  const TRAJ = [
+    ['Selic, fim do ano (%)', ['14,25', '12,25', '10,75', '10,25', '10,00', '10,00']],
+    ['CDI, média do ano (%)', ['14,65', '13,15', '11,40', '10,40', '10,05', '9,90']],
+    ['IPCA, no ano (%)', ['4,60', '4,00', '3,70', '3,50', '3,50', '3,50']],
+    ['Câmbio, fim do ano (R$/US$)', ['5,45', '5,60', '5,72', '5,85', '5,98', '5,98']]
+  ];
+  const tbT = $('#tabTraj tbody');
+  const desenhaTraj = editavel => {
+    tbT.innerHTML = TRAJ.map(([nome, vals]) => `<tr><td><b>${nome}</b></td>${vals.map((v, j) => `<td class="${j === 5 ? 'ext' : ''}"><input value="${v}" aria-label="${nome} ${2026 + j}" ${editavel ? '' : 'readonly'}></td>`).join('')}</tr>`).join('');
+  };
+  desenhaTraj(false);
+  $$('input[name="cen"]').forEach(r => r.addEventListener('change', () => desenhaTraj(r.value === 'pers' && r.checked)));
+  const h = $('#horiz');
+  h.addEventListener('input', () => { const n = +h.value; $('#horizVal').textContent = `${n} ${n === 1 ? 'ano' : 'anos'} (2026–${2025 + n})`; });
+  h.dispatchEvent(new Event('input'));
+
+  /* ---------- gráficos ---------- */
+  function passo(range, n) { const raw = range / n, p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p; }
+  function marcas(lo, hi, n = 5) { const st = passo((hi - lo) || 1, n); const a = Math.floor(lo / st) * st, b = Math.ceil(hi / st) * st; const out = []; for (let v = a; v <= b + st / 2; v += st) out.push(+v.toFixed(6)); return out; }
+
+  function ligaTooltip(host, svg, W, xs, conteudo, yTopo) {
+    const tip = host.querySelector('.tip'), hl = svg.querySelector('.hover-line'), hits = svg.querySelectorAll('.hit');
+    hits.forEach(r => r.addEventListener('mouseenter', () => {
+      const i = +r.dataset.i;
+      hl.setAttribute('x1', xs(i)); hl.setAttribute('x2', xs(i)); hl.style.opacity = 1;
+      tip.innerHTML = conteudo(i);
+      tip.style.left = (xs(i) / W * 100) + '%';
+      tip.style.top = (yTopo(i) / svg.viewBox.baseVal.height * 100) + '%';
+      tip.style.transform = i === 0 ? 'translate(-8%,-112%)' : i === hits.length - 1 ? 'translate(-92%,-112%)' : 'translate(-50%,-112%)';
+      tip.style.opacity = 1;
+    }));
+    svg.addEventListener('mouseleave', () => { tip.style.opacity = 0; hl.style.opacity = 0; });
+  }
+
+  function grafLinha(host, o) {
+    const W = o.W || 720, H = o.H || 290, m = { l: 56, r: 18, t: 30, b: 42 };
+    const vals = o.series.flatMap(s => s.data);
+    const tk = marcas(o.yMin ?? Math.min(...vals), o.yMax ?? Math.max(...vals), o.nTicks || 5);
+    const lo = tk[0], hi = tk[tk.length - 1], iw = W - m.l - m.r, ih = H - m.t - m.b, n = o.x.length;
+    const sx = i => m.l + i * iw / (n - 1), sy = v => m.t + (hi - v) / (hi - lo) * ih;
+    let g = '';
+    tk.forEach(t => g += `<line class="grid" x1="${m.l}" x2="${W - m.r}" y1="${sy(t)}" y2="${sy(t)}"/><text x="${m.l - 9}" y="${sy(t)}" dy=".32em" text-anchor="end">${o.fmtY(t)}</text>`);
+    g += `<line class="axis" x1="${m.l}" x2="${W - m.r}" y1="${m.t + ih}" y2="${m.t + ih}"/>`;
+    o.x.forEach((x, i) => g += `<text x="${sx(i)}" y="${m.t + ih + 19}" text-anchor="middle">${x}</text>`);
+    g += `<text class="axis-title" x="0" y="12">${o.yTitle}</text><text class="axis-title" x="${W - m.r}" y="${H - 3}" text-anchor="end">${o.xTitle}</text>`;
+    g += `<line class="hover-line" x1="0" x2="0" y1="${m.t}" y2="${m.t + ih}" style="opacity:0"/>`;
+    o.series.forEach(s => {
+      g += `<path class="serie ${s.cls}" d="${s.data.map((v, i) => (i ? 'L' : 'M') + sx(i).toFixed(1) + ',' + sy(v).toFixed(1)).join('')}"/>`;
+      s.data.forEach((v, i) => g += `<circle class="pt ${s.cls}" cx="${sx(i)}" cy="${sy(v)}" r="${o.r || 3.6}"/>`);
+    });
+    o.x.forEach((x, i) => g += `<rect class="hit" data-i="${i}" x="${sx(i) - iw / (n - 1) / 2}" y="${m.t}" width="${iw / (n - 1)}" height="${ih}" fill="transparent"/>`);
+    host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${o.aria}">${g}</svg><div class="tip"></div>`;
+    ligaTooltip(host, host.querySelector('svg'), W, sx,
+      i => `<b>${o.x[i]}</b>` + o.series.map(s => `<div><span class="sw" style="background:${s.cor}"></span>${s.nome}: <b>${o.fmtTip(s.data[i])}</b></div>`).join(''),
+      i => Math.min(...o.series.map(s => sy(s.data[i]))));
+  }
+
+  function grafCredito(host, o) {
+    const W = 720, H = 300, m = { l: 48, r: 18, t: 30, b: 42 };
+    const tk = marcas(0, Math.max(...o.irbr, ...o.teto, ...o.saldo), 4);
+    const hi = tk[tk.length - 1], iw = W - m.l - m.r, ih = H - m.t - m.b, n = o.x.length, gw = iw / n;
+    const cx = i => m.l + gw * (i + .5), sy = v => m.t + (hi - v) / hi * ih, bw = Math.min(22, gw * .22);
+    let g = '';
+    tk.forEach(t => g += `<line class="grid" x1="${m.l}" x2="${W - m.r}" y1="${sy(t)}" y2="${sy(t)}"/><text x="${m.l - 9}" y="${sy(t)}" dy=".32em" text-anchor="end">${fmt0(t)}</text>`);
+    g += `<line class="axis" x1="${m.l}" x2="${W - m.r}" y1="${m.t + ih}" y2="${m.t + ih}"/>`;
+    g += `<text class="axis-title" x="0" y="12">${o.yTitle}</text><text class="axis-title" x="${W - m.r}" y="${H - 3}" text-anchor="end">ANO DA DECLARAÇÃO</text>`;
+    g += `<line class="hover-line" x1="0" x2="0" y1="${m.t}" y2="${m.t + ih}" style="opacity:0"/>`;
+    o.x.forEach((x, i) => {
+      const b = (k, v, cls) => `<rect class="${cls}" x="${cx(i) + (k - 1.5) * (bw + 3)}" y="${sy(v)}" width="${bw}" height="${Math.max(0, m.t + ih - sy(v))}" rx="2"/>`;
+      g += b(0, o.teto[i], 'b-teto') + b(1, o.irbr[i], 'b-irbr') + b(2, o.usado[i], 'b-usado');
+      g += `<text x="${cx(i)}" y="${m.t + ih + 19}" text-anchor="middle">${x}</text>`;
+    });
+    const imax = o.irbr.indexOf(Math.max(...o.irbr));
+    g += `<text class="val" x="${cx(imax) - .5 * (bw + 3) + bw / 2}" y="${sy(o.irbr[imax]) - 7}" text-anchor="middle">${fmt1(o.irbr[imax])}</text>`;
+    g += `<path class="s-saldo" d="${o.saldo.map((v, i) => (i ? 'L' : 'M') + (cx(i) + 1.5 * (bw + 3)).toFixed(1) + ',' + sy(v).toFixed(1)).join('')}"/>`;
+    o.saldo.forEach((v, i) => g += `<circle class="pt s-saldo" cx="${cx(i) + 1.5 * (bw + 3)}" cy="${sy(v)}" r="3.6"/>`);
+    g += `<text class="val" x="${cx(n - 1) + 1.5 * (bw + 3) + 6}" y="${sy(o.saldo[n - 1])}" dy=".32em" style="fill:var(--alerta)">${fmt1(o.saldo[n - 1])}</text>`;
+    o.x.forEach((x, i) => g += `<rect class="hit" data-i="${i}" x="${cx(i) - gw / 2}" y="${m.t}" width="${gw}" height="${ih}" fill="transparent"/>`);
+    host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Teto, IR retido no Brasil, crédito usado e saldo por ano">${g}</svg><div class="tip"></div>`;
+    ligaTooltip(host, host.querySelector('svg'), W, cx,
+      i => `<b>${o.x[i]}</b><div><span class="sw" style="background:var(--verde-tint);border:1px solid var(--verde)"></span>Teto: <b>${fmt2(o.teto[i])}</b></div><div><span class="sw" style="background:var(--bege)"></span>IR retido no Brasil: <b>${fmt2(o.irbr[i])}</b></div><div><span class="sw" style="background:var(--verde)"></span>Crédito usado: <b>${fmt2(o.usado[i])}</b></div><div><span class="sw" style="background:var(--alerta)"></span>Saldo: <b>${fmt2(o.saldo[i])}</b></div>`,
+      i => Math.min(sy(o.irbr[i]), sy(o.teto[i]), sy(o.saldo[i])));
+  }
+
+  grafLinha($('#chCambio'), {
+    x: [2026, 2027, 2028, 2029, 2030, 2031], W: 420, H: 210, r: 3.2, yTitle: 'R$/US$', xTitle: 'FIM DO ANO', fmtY: fmt2, fmtTip: v => 'R$ ' + fmt2(v), nTicks: 4, aria: 'Câmbio projetado por ano',
+    series: [{ nome: 'Câmbio', cls: '', cor: 'var(--bege)', data: [5.45, 5.60, 5.72, 5.85, 5.98, 5.98] }]
+  });
+
+  /* ---------- etapa 6: resultados (ilustrativos) e moeda ---------- */
+  const FX = [5.45, 5.60, 5.72, 5.85, 5.98, 5.98];   // câmbio projetado no fim de cada ano (ilustrativo)
+  const RES = {
+    anos: [2026, 2027, 2028, 2029, 2030, 2031],
+    patr: {   // US$ mil
+      a: { melhor: [213.0, 223.1, 233.9, 248.3, 261.0, 269.1], atual: [213.0, 223.1, 233.9, 245.2, 256.8, 258.7], outra: [213.0, 223.1, 233.9, 245.2, 252.1, 254.6] },
+      b: { melhor: [213.0, 222.9, 233.6, 247.9, 260.4, 268.3], atual: [213.0, 222.9, 233.6, 244.8, 256.1, 257.8], outra: [213.0, 222.9, 233.6, 244.8, 251.4, 253.7] }
+    },
+    cred: {   // US$
+      teto: [3777, 3952, 4091, 4243, 4362, 2350],
+      irbr: [380, 400, 410, 430, 440, 17310],
+      proprio: [380, 400, 410, 430, 440, 2350],
+      recebido: [0, 0, 0, 0, 3922, 0],          // vindo de 2031 (carryback)
+      saldo: [0, 0, 0, 0, 0, 11038]
+    },
+    det: {    // US$
+      renda: [22410, 23380, 24150, 24990, 25640, 14300],
+      cambio: [-1120, -940, -860, -780, -700, -1950],
+      fed: [4730, 4986, 5180, 5380, 1624, 614]
+    },
+    decomp: [['Crédito aproveitado', 10700], ['IR nos EUA', -400], ['Câmbio', 100], ['Rendimento bruto', 0], ['IR no Brasil', 0]]
+  };
+  let moeda = 'USD', alt = 'a';
+  const SIM = () => moeda === 'USD' ? 'US$' : 'R$';
+  const cv = (usd, i = 5) => moeda === 'USD' ? usd : usd * FX[i];
+  const arred = v => moeda === 'USD' ? Math.round(v) : Math.round(v / 10) * 10;
+  const num = v => (v < 0 ? '−' : '') + fmt0(Math.abs(arred(v)));
+  const fmtM = (v, sinal = false) => (v < 0 ? '−' : sinal && v > 0 ? '+' : '') + SIM() + ' ' + fmt0(Math.abs(arred(v)));
+  const din = (usd, i = 5, sinal = false) => fmtM(cv(usd, i), sinal);
+  const partes = v => Math.abs(v) >= 1e6 ? [fmt2(Math.abs(v) / 1e6), 'mi'] : [fmt1(Math.abs(v) / 1e3), 'mil'];
+  const sinalDe = (v, s) => v < 0 ? '−' : s && v > 0 ? '+' : '';
+  const grandeHTML = (usd, i = 5, s = false) => { const v = cv(usd, i), [n, u] = partes(v); return `${sinalDe(v, s)}${SIM()} ${n}<small>${u}</small>`; };
+  const grandeTxt = (usd, i = 5, s = false) => { const v = cv(usd, i), [n, u] = partes(v); return `${sinalDe(v, s)}${SIM()} ${n} ${u}`; };
+  const somaCv = arr => arr.reduce((s, x, i) => s + cv(x, i), 0);
+
+  function desenhaPatrimonio() {
+    const d = RES.patr[alt], conv = arr => arr.map((v, i) => cv(v * 1000, i) / 1000);
+    grafLinha($('#chPatrimonio'), {
+      x: RES.anos, yTitle: SIM().toUpperCase() + ' MIL', xTitle: 'ANO', fmtY: fmt0, fmtTip: v => SIM() + ' ' + fmt1(v) + ' mil',
+      yMin: moeda === 'USD' ? 200 : undefined, aria: 'Patrimônio líquido por ano em três estratégias',
+      series: [
+        { nome: 'Resgates parciais', cls: 's-melhor', cor: 'var(--verde)', data: conv(d.melhor) },
+        { nome: 'Seu plano', cls: 's-atual', cor: 'var(--alerta)', data: conv(d.atual) },
+        { nome: 'Total em 2030', cls: 's-outra', cor: 'var(--bege-escuro)', data: conv(d.outra) }
+      ]
+    });
+  }
+  function desenhaCreditoG() {
+    const C = RES.cred, k = arr => arr.map((v, i) => cv(v, i) / 1000);
+    grafCredito($('#chCredito'), {
+      x: RES.anos, yTitle: SIM().toUpperCase() + ' MIL', teto: k(C.teto), irbr: k(C.irbr),
+      usado: C.proprio.map((v, i) => (cv(v, i) + cv(C.recebido[i], 5)) / 1000),
+      saldo: C.saldo.map(v => cv(v, 5) / 1000)
+    });
+  }
+  function desenhaDecomp() {
+    const vals = RES.decomp.map(([n, v]) => [n, cv(v, 5)]), maxAbs = Math.max(...vals.map(d => Math.abs(d[1])));
+    $('#decomp').innerHTML = vals.map(([n, v]) => {
+      const w = Math.abs(v) / maxAbs * 50;
+      return `<div class="dc-row"><span>${n}</span><div class="dc-track"><div class="dc-bar ${v >= 0 ? 'pos' : 'neg'}" style="left:${v >= 0 ? 50 : 50 - w}%;width:${w}%"></div></div><span class="dc-v ${v > 0 ? 'dif-pos' : v < 0 ? 'dif-neg' : ''}">${fmtM(v, true)}</span></div>`;
+    }).join('') + `<div class="dc-row dc-total"><span>Diferença total</span><span></span><span class="dc-v dif-pos">${din(10400, 5, true)}</span></div>`;
+  }
+  function desenhaTabelas() {
+    const C = RES.cred, D = RES.det, A = RES.anos;
+    $('#tbSchedB').innerHTML = A.map((a, i) => {
+      const ult = i === A.length - 1;
+      const proprio = ult ? `<button class="memo-claro" data-memo="teto">${num(cv(C.proprio[i], i))}</button>` : num(cv(C.proprio[i], i));
+      return `<tr><td>${a}</td><td class="r">${num(cv(C.irbr[i], i))}</td><td class="r">${proprio}</td><td class="r">${ult ? num(cv(3922, 5)) + ' <small>em 2030</small>' : '—'}</td><td class="r">${ult ? '0' : '—'}</td><td class="r">${ult ? '2041' : '—'}</td><td class="r">${ult ? '<b>' + num(cv(C.saldo[i], 5)) + '</b>' : '0'}</td></tr>`;
+    }).join('');
+    $('#tfSchedB').innerHTML = `<tr><td>Total</td><td class="r">${num(somaCv(C.irbr))}</td><td class="r">${num(somaCv(C.proprio))}</td><td class="r">${num(cv(3922, 5))}</td><td class="r">0</td><td class="r"></td><td class="r">${num(cv(11038, 5))}</td></tr>`;
+    $('#notaSchedB').textContent = moeda === 'USD'
+      ? 'Valores em US$, convertidos pelo câmbio da data de cada retenção. Clique nos números sublinhados para ver a memória de cálculo.'
+      : 'Valores em R$, pelo câmbio projetado de cada ano (ilustrativo). A declaração americana é feita em US$. Clique nos números sublinhados para ver a memória de cálculo.';
+    const usado = A.map((_, i) => cv(C.proprio[i], i) + cv(C.recebido[i], 5));
+    $('#tbDet').innerHTML = A.map((a, i) => {
+      const nota = i === 4 ? '¹' : '';
+      const teto = i === A.length - 1 ? `<button class="memo-claro" data-memo="teto">${num(cv(C.teto[i], i))}</button>` : num(cv(C.teto[i], i));
+      return `<tr><td>${a}</td><td class="r">${num(cv(D.renda[i], i))}</td><td class="r">${num(cv(D.cambio[i], i))}</td><td class="r">${num(cv(C.irbr[i], i))}</td><td class="r">${teto}</td><td class="r">${num(usado[i])}${nota}</td><td class="r">${num(cv(D.fed[i], i))}${nota}</td><td class="r">0</td><td class="r">0</td></tr>`;
+    }).join('');
+    $('#tfDet').innerHTML = `<tr><td>Total</td><td class="r">${num(somaCv(D.renda))}</td><td class="r">${num(somaCv(D.cambio))}</td><td class="r">${num(somaCv(C.irbr))}</td><td class="r">${num(somaCv(C.teto))}</td><td class="r">${num(usado.reduce((s, x) => s + x, 0))}</td><td class="r">${num(somaCv(D.fed))}</td><td class="r">0</td><td class="r">0</td></tr>`;
+    $('#notaDet').textContent = `Valores em ${SIM()}${moeda === 'BRL' ? ', pelo câmbio projetado de cada ano (ilustrativo); a declaração americana é feita em US$' : ''}. ¹ Inclui ${din(3922, 5)} do crédito de 2031 enviados a 2030 (Form 1040-X). Federal = imposto com os investimentos do Brasil menos o imposto sem eles, depois do crédito.`;
+  }
+
+  /* ---------- alternativas: taxa de equilíbrio e teste de troca ---------- */
+  const IPCA_PROJ = 0.035;
+  const TROCAS = {
+    cdb: { de: 'CDB 102% do CDI', conta: 'Light, 15%', por: 'LCI ou LCA', tipo: 'cdi', taxa: 102, padrao: '95', cPlano: .389, cParc: .240, cIsento: .240, bruto: 85000 },
+    tes: { de: 'Tesouro IPCA+ 2035, juros semestrais', conta: 'Light, regressiva', por: 'CRI, CRA ou debênture incentivada', tipo: 'ipca', taxa: 7.2, padrao: '6,50', cPlano: .332, cParc: .241, cIsento: .240, bruto: 37000 }
+  };
+  const rendTotal = (T, taxa) => T.tipo === 'cdi' ? taxa : (1 + IPCA_PROJ) * (1 + taxa / 100) - 1;
+  const equilibrio = (T, c) => {
+    if (T.tipo === 'cdi') return T.taxa * (1 - c) / (1 - T.cIsento);
+    const tot = rendTotal(T, T.taxa) * (1 - c) / (1 - T.cIsento);
+    return ((1 + tot) / (1 + IPCA_PROJ) - 1) * 100;
+  };
+  const fmtTaxa = (T, v) => T.tipo === 'cdi' ? fmt1(v) + '% do CDI' : 'IPCA + ' + fmt1(v) + '%';
+  const ganho = (T, taxa, c) => T.bruto * ((rendTotal(T, taxa) / rendTotal(T, T.taxa)) * (1 - T.cIsento) - (1 - c));
+  $('#tbEquil').innerHTML = Object.values(TROCAS).map(T =>
+    `<tr><td><b>${T.de}</b><small>${T.conta}</small></td><td class="r">${fmt1(T.cPlano * 100)}%</td><td>${T.por}<small>${T.tipo === 'cdi' ? '% do CDI' : 'IPCA + taxa'}</small></td><td class="r"><b>${fmtTaxa(T, equilibrio(T, T.cPlano))}</b></td><td class="r">${fmtTaxa(T, equilibrio(T, T.cParc))}</td></tr>`).join('');
+
+  function atualizaTroca(novaOrigem = false) {
+    const T = TROCAS[$('#trocaDe').value];
+    if (novaOrigem) $('#trocaTaxa').value = T.padrao;
+    $('#trocaPor').textContent = `${T.por} (${T.tipo === 'cdi' ? '% do CDI' : 'IPCA + taxa'})`;
+    $('#trocaPre').hidden = T.tipo === 'cdi';
+    $('#trocaSuf').textContent = T.tipo === 'cdi' ? '% do CDI' : '% a.a.';
+    $('#trocaEq').innerHTML = `Empata em <b>${fmtTaxa(T, equilibrio(T, T.cPlano))}</b> no seu plano e em <b>${fmtTaxa(T, equilibrio(T, T.cParc))}</b> se todo o crédito for usado.`;
+    const taxa = parseNum($('#trocaTaxa').value);
+    if (!taxa) { $('#trocaRes').innerHTML = '<p class="ajuda">Digite a taxa oferecida para a alternativa.</p>'; return; }
+    const g1 = ganho(T, taxa, T.cPlano), g2 = ganho(T, taxa, T.cParc), oferta = `${T.por} a ${fmtTaxa(T, taxa)}`;
+    const veredito = g1 > 0 && g2 > 0 ? `Na simulação, ${oferta} rende mais que o ${T.de} nos dois planos de resgate.`
+      : g1 > 0 ? `Na simulação, ${oferta} só rende mais no seu plano, porque nele parte do crédito do ${T.de} fica em saldo. Mudando o plano de resgate, o produto atual rende mais.`
+      : g2 > 0 ? `Na simulação, o resultado depende do plano de resgate.`
+      : `Na simulação, o ${T.de} rende mais que ${oferta} nos dois planos de resgate.`;
+    $('#trocaRes').innerHTML = `
+      <div class="mini"><span>Com o seu plano de resgate</span><b class="${g1 >= 0 ? 'dif-pos' : 'dif-neg'}">${din(g1, 5, true)}</b><span>no patrimônio final</span></div>
+      <div class="mini"><span>Com resgates parciais 2029–2031</span><b class="${g2 >= 0 ? 'dif-pos' : 'dif-neg'}">${din(g2, 5, true)}</b><span>no patrimônio final</span></div>
+      <p class="frase" style="grid-column:1/-1;font-size:1.02rem">${veredito}</p>`;
+  }
+  $('#trocaDe').addEventListener('change', () => atualizaTroca(true));
+  $('#trocaTaxa').addEventListener('input', () => atualizaTroca());
+
+  function pintaResultados() {
+    $$('[data-moeda]').forEach(b => b.setAttribute('aria-pressed', b.dataset.moeda === moeda));
+    $$('[data-sim]').forEach(el => el.textContent = SIM());
+    $$('[data-usd]').forEach(el => {
+      const u = +el.dataset.usd, i = el.dataset.i ? +el.dataset.i : 5, s = el.hasAttribute('data-sinal'), f = el.dataset.fmt;
+      el.innerHTML = f === 'g' ? grandeHTML(u, i, s) : f === 'gt' ? grandeTxt(u, i, s) : din(u, i, s);
+    });
+    const pf = 258660;
+    $('#bnPatrSub').textContent = (moeda === 'USD' ? 'R$ ' + fmt0(Math.round(pf * FX[5] / 10) * 10) : 'US$ ' + fmt0(pf)) + ' · depois de todos os impostos';
+    $('#bnIrbr').textContent = `${fmtM(somaCv(RES.cred.irbr))} retidos no Brasil`;
+    $('#bnProprio').textContent = num(somaCv(RES.cred.proprio));
+    $('#bnAnterior').textContent = num(cv(3922, 5));
+    $('#bnSaldo').textContent = num(cv(11038, 5));
+    desenhaPatrimonio(); desenhaCreditoG(); desenhaDecomp(); desenhaTabelas(); atualizaTroca();
+  }
+  $$('[data-moeda]').forEach(b => b.addEventListener('click', () => { moeda = b.dataset.moeda; pintaResultados(); }));
+  $$('.pend-strip .alt').forEach(b => b.addEventListener('click', () => {
+    $$('.pend-strip .alt').forEach(x => x.setAttribute('aria-pressed', x === b));
+    alt = b.dataset.alt; desenhaPatrimonio();
+  }));
+
+  /* ---------- abas dos resultados ---------- */
+  const abas = $$('.tab');
+  const ativa = t => {
+    abas.forEach(x => { const on = x === t; x.setAttribute('aria-selected', on); x.tabIndex = on ? 0 : -1; $('#' + x.getAttribute('aria-controls')).hidden = !on; });
+    t.focus();
+  };
+  abas.forEach((t, i) => {
+    t.addEventListener('click', () => ativa(t));
+    t.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') ativa(abas[(i + 1) % abas.length]);
+      if (e.key === 'ArrowLeft') ativa(abas[(i - 1 + abas.length) % abas.length]);
+    });
+  });
+
+  /* ---------- memória de cálculo ---------- */
+  const SELO = { aprox: '<span class="selo selo--aprox">Aproximação</span>', prem: '<span class="selo selo--prem">Premissa de mercado</span>', ok: '<span class="selo selo--ok">Regra confirmada</span>', pend: '<span class="selo selo--pend">Pendente</span>' };
+  const ORIG = { regra: '<span class="selo selo--ok">Regra</span>', usuario: '<span class="selo selo--fato">Você</span>', mercado: '<span class="selo selo--prem">Premissa</span>', calc: '<span class="selo selo--aprox">Calculado</span>' };
+  const MEMO = {
+    patrimonio: {
+      t: 'Patrimônio final em 2031',
+      f: 'Valor de liquidação no Brasil, líquido de IR (R$) ÷ câmbio do fim de 2031 − impostos americanos causados pelos investimentos no Brasil',
+      r: 'R$ 1.681.400 ÷ 5,98 − US$ 22.514 = US$ 258.660',
+      i: [['Valor de liquidação, líquido de IR Brasil', 'R$ 1.681.400', 'calc'], ['Câmbio no fim de 2031', 'R$ 5,98', 'mercado'], ['IR federal depois do crédito, 2026–2031', 'US$ 22.514', 'calc'], ['NIIT, 2026–2031', 'US$ 0', 'calc'], ['Imposto estadual (Flórida)', 'US$ 0', 'regra']],
+      b: ['IRC §1272(a)(1) e Reg. §1.1272-1: OID reconhecido todo ano', 'Reg. §1.988-2(b): conversão pelo câmbio médio do período', 'IRC §904: teto do crédito'],
+      s: ['aprox', 'prem', 'pend']
+    },
+    carga: {
+      t: 'Carga efetiva total',
+      f: '(IR Brasil + IR federal depois do crédito + NIIT + estadual) ÷ renda reconhecida nos EUA',
+      r: '(19.370 + 22.514 + 0 + 0) ÷ 134.870 = 31,1%',
+      i: [['IR retido no Brasil', 'US$ 19.370', 'calc'], ['IR federal depois do crédito', 'US$ 22.514', 'calc'], ['NIIT', 'US$ 0', 'calc'], ['Imposto estadual (Flórida)', 'US$ 0', 'regra'], ['Juros e OID reconhecidos nos EUA', 'US$ 134.870', 'calc']],
+      b: ['Lei 11.033/2004, art. 1º: tabela regressiva (CNR Light)', 'Rev. Proc. 2025-32: faixas federais de 2026', 'IRC §1411: NIIT'],
+      s: ['aprox', 'prem']
+    },
+    credito: {
+      t: 'Destino do IR retido no Brasil',
+      f: 'IR retido = usado no próprio ano + enviado ao ano anterior + usado nos anos seguintes + em saldo + perdido',
+      r: '19.370 = 4.410 + 3.922 + 0 + 11.038 + 0',
+      i: [['IR retido, convertido na data de cada retenção', 'US$ 19.370', 'calc'], ['Soma dos tetos usados no próprio ano', 'US$ 4.410', 'calc'], ['Espaço livre no teto de 2030', 'US$ 3.922', 'calc'], ['Renda estrangeira depois de 2031', 'US$ 0', 'usuario']],
+      b: ['IRC §904(c): 1 ano para trás e 10 para frente', 'Reg. §1.904-2(b): ordem obrigatória do saldo', 'Reg. §1.905-1(c)(1) e (d)(1): crédito no ano da retenção'],
+      s: ['aprox']
+    },
+    teto: {
+      t: 'Teto do crédito de 2031',
+      f: 'IR federal regular antes dos créditos × (renda tributável de fonte estrangeira ÷ renda tributável total)',
+      r: 'US$ 24.362 × (US$ 12.769 ÷ US$ 132.350) = US$ 2.350',
+      i: [['Renda tributável total', 'US$ 132.350', 'calc'], ['Juros e OID de fonte estrangeira', 'US$ 14.300', 'calc'], ['Dedução padrão alocada pela renda bruta', '−US$ 1.531', 'regra'], ['Renda tributável de fonte estrangeira', 'US$ 12.769', 'calc'], ['IR federal regular (faixas de 2026, Single)', 'US$ 24.362', 'regra'], ['Sua renda tributável sem o Brasil', 'US$ 120.000', 'usuario']],
+      b: ['IRC §904(a): teto do crédito', 'Form 1116, Parte III: alocação de deduções', 'Rev. Proc. 2025-32: faixas e dedução padrão de 2026'],
+      s: ['ok', 'aprox']
+    }
+  };
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-memo]'); if (!b) return;
+    const m = MEMO[b.dataset.memo];
+    $('#dlgMemoT').textContent = m.t;
+    $('#dlgMemoBody').innerHTML = `
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem">${m.s.map(s => SELO[s]).join('')}<span class="selo" style="color:var(--alerta);border-color:var(--alerta)">Valores ilustrativos</span></div>
+      <div class="formula">${m.f}<span class="res">${m.r}</span></div>
+      <div class="dlg-sec"><h4>Insumos</h4><table class="insumos">${m.i.map(([n, v, o]) => `<tr><td>${n}</td><td class="tnum">${v}</td><td>${ORIG[o]}</td></tr>`).join('')}</table></div>
+      <div class="dlg-sec"><h4>Base legal</h4><ul class="base-legal">${m.b.map(x => `<li>${x}</li>`).join('')}</ul></div>
+      <p class="nota" style="margin-top:1rem">A memória de cálculo fica em US$, a moeda da declaração americana.</p>`;
+    $('#dlgMemo').showModal();
+  });
+
+  /* ---------- "ver em" (só no protótipo) ---------- */
+  function abreViewer(w, hgt) {
+    const base = location.href.split(/[?#]/)[0];
+    const v = document.createElement('div');
+    v.className = 'viewer';
+    v.innerHTML = `<div class="viewer-bar"><span>Visualizando em <b>${w}×${hgt}</b> · escala <b class="vEsc"></b></span><button class="btn btn--bege btn--sm" type="button">Fechar (Esc)</button></div><iframe title="Protótipo em ${w} por ${hgt}" src="${base}?embed=1&etapa=${etapa}" width="${w}" height="${hgt}"></iframe>`;
+    document.body.appendChild(v);
+    const ifr = $('iframe', v);
+    const ajusta = () => { const s = Math.min((innerWidth - 40) / w, (innerHeight - 80) / hgt, 1); ifr.style.transform = `translate(-50%,-50%) scale(${s})`; $('.vEsc', v).textContent = Math.round(s * 100) + '%'; };
+    const esc = e => { if (e.key === 'Escape') fecha(); };
+    const fecha = () => { v.remove(); removeEventListener('resize', ajusta); removeEventListener('keydown', esc); };
+    ajusta(); addEventListener('resize', ajusta); addEventListener('keydown', esc);
+    $('button', v).addEventListener('click', fecha);
+  }
+  $$('#viewerCtl [data-view]').forEach(b => b.addEventListener('click', () => { const [w, hgt] = b.dataset.view.split('x').map(Number); abreViewer(w, hgt); }));
+
+  /* ---------- início ---------- */
+  pintaIcones();
+  desenhaCarteira();
+  pintaResultados();
+  const e0 = +qs.get('etapa');
+  if (e0 >= 2 && e0 <= 7) { liberado = true; irPara(e0, false); } else irPara(1, false);
+})();
+</script>
+</body>
+</html>
